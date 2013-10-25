@@ -4,7 +4,7 @@
  * @version 1.0.2
  */
 (function() {
-	
+
 var angularFileUpload = angular.module('angularFileUpload', []);
 
 angularFileUpload.html5 = !!window.FormData;
@@ -34,7 +34,7 @@ if (!angularFileUpload.html5) {
 					staticPath: base
 				}
 			}
-	
+
 			script.setAttribute('src', base + 'FileAPI.min.js');
 			document.getElementsByTagName('head')[0].appendChild(script);
 		}
@@ -88,7 +88,7 @@ angularFileUpload.XMLHttpRequest = function() {
 					}
 				}
 				this.config.headers = this.headers;
-				FileAPI.upload(this.config);				
+				FileAPI.upload(this.config);
 			},
 			readyState: 0,
 			status: 0,
@@ -103,23 +103,23 @@ angularFileUpload.XMLHttpRequest = function() {
 angularFileUpload.defineHttpUploadFile = function($http) {
 	if (!$http.uploadFile) {
 		$http.uploadFile = function(config) {
-			var xhr = new angularFileUpload.XMLHttpRequest(), then, success, error, progress, response, 
+			var xhr = new angularFileUpload.XMLHttpRequest(), then, success, error, progress, response,
 				formData = new FormData();
 			formData.append(config.fileFormDataName || 'file', config.file);
 			for (key in config.data) {
 				formData.append(key, config.data[key]);
 			}
 			xhr.open(config.method || 'POST', config.url, true);
-	
+
 			config.headers = config.headers || {};
 			for (key in config.headers) {
 				xhr.setRequestHeader(key, config.headers[key]);
 			}
-	
+
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
-					var JSON_START = /^\s*(\[|\{[^\{])/, JSON_END = /[\}\]]\s*$/, PROTECTION_PREFIX = /^\)\]\}',?\n/, 
-						data = xhr.responseText, responseHeaders = xhr.getAllResponseHeaders(); 
+					var JSON_START = /^\s*(\[|\{[^\{])/, JSON_END = /[\}\]]\s*$/, PROTECTION_PREFIX = /^\)\]\}',?\n/,
+						data = xhr.responseText, responseHeaders = xhr.getAllResponseHeaders();
 					if (typeof data == 'string') {
 						// strip json vulnerability protection prefix
 						data = data.replace(PROTECTION_PREFIX, '');
@@ -127,18 +127,18 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 							data = (typeof data === 'string') ? JSON.parse(data) : data;
 					}
 			        if (200 <= xhr.status && xhr.status < 300) {
-						if (then) then(data, xhr.status, responseHeaders, config);							
+						if (then) then(data, xhr.status, responseHeaders, config);
 						if (success) success(data, xhr.status, responseHeaders, config);
 					} else {
-						if (error) error(data, xhr.status, responseHeaders, config);							
+						if (error) error(data, xhr.status, responseHeaders, config);
 					}
 				}
 			}
-			
+
 			xhr.upload.addEventListener('progress', function(e) {
 				if (progress) progress(e);
 			}, false);
-	
+
 			response = {
 				then: function(func) {
 					then = func;
@@ -157,9 +157,9 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 					return response;
 				}
 			};
-			
+
 			xhr.send(formData);
-	
+
 			return response;
 		};
 	}
@@ -168,12 +168,15 @@ angularFileUpload.defineHttpUploadFile = function($http) {
 
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse, $http) {
 	angularFileUpload.defineHttpUploadFile($http);
-	
+
 	return function(scope, elem, attr) {
 		var fn = $parse(attr['ngFileSelect']);
 		if (!angularFileUpload.html5) {
 			elem.wrap('<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden">');
 		}
+    elem.bind('click', function(){
+      this.value = null;
+    });
 		elem.bind('change', function(evt) {
 			var files = [], fileList, i;
 			if (!angularFileUpload.html5) {
