@@ -8,6 +8,23 @@
 var angularFileUpload = angular.module('angularFileUpload', []);
 
 angularFileUpload.service('$upload', ['$http', function($http) {
+    var addData = function(object, formData, parent_key){
+        for(var key in object){
+            if(object[key] instanceof Object){
+                for(var k2 in object[key]){
+                    if(object[key][k2] instanceof Array){
+                        for(var i = 0; i < object[key][k2].length; i++)
+                            formData.append(key + '[' + k2 + '][]', object[key][k2][i]);
+                    }else{
+                        formData.append(key + '[' + k2 + ']', object[key][k2]);
+                    }
+                }
+            }else{
+                formData.append(key, object[key]);
+            }
+        }
+    }
+
 	this.upload = function(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
@@ -15,9 +32,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
-			for (key in config.data) {
-				formData.append(key, config.data[key]);
-			}
+            addData(config.data, formData);
 		}
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
 		formData['__uploadProgress_'] = function(e) {
