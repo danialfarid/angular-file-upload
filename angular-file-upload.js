@@ -15,9 +15,16 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		config.transformRequest =  angular.identity;
 		var formData = new FormData();
 		if (config.data) {
-			for (var key in config.data) {
-				formData.append(key, config.data[key]);
-			}
+                  angular.forEach(config.data, function(value, key) {
+                    /* should we support nested structures (objects) */
+                    if (angular.isArray(value)) {
+                      angular.forEach(value, function(v) {
+                        formData.append(key, v);
+                      });
+                    } else {
+                      formData.append(key, value);
+                    }
+                  });
 		}
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
 		formData['__uploadProgress_'] = function(e) {
