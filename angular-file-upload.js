@@ -16,7 +16,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
 		var formData = new FormData();
 		if (config.data) {
                   angular.forEach(config.data, function(value, key) {
-                    // should we support nested structures (objects)
+                    /* should we support nested structures (objects) */
                     if (angular.isArray(value)) {
                       angular.forEach(value, function(v) {
                         formData.append(key, v);
@@ -24,7 +24,7 @@ angularFileUpload.service('$upload', ['$http', function($http) {
                     } else {
                       formData.append(key, value);
                     }
-                  }
+                  });
 		}
 		formData.append(config.fileFormDataName || 'file', config.file, config.file.name);
 		formData['__uploadProgress_'] = function(e) {
