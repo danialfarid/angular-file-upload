@@ -96,12 +96,17 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', function($parse
 					files.push(fileList.item(i));
 				}
 			}
-			scope.$apply(function() {
-				fn(scope, {
-					$files : files,
-					$event : evt
-				});
-			});
+      var locals = {
+        $files : files,
+        $event : evt
+      };
+      if (!scope.$$phase) {
+        scope.$apply(function() {
+          fn(scope, locals);
+        });
+      } else {
+        fn(scope, locals);
+      }
 		});
 		elem.bind('click', function(){
 			this.value = null;
