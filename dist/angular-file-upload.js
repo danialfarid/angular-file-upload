@@ -71,6 +71,10 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
+		if (config.flatData) {
+			config.data = config.file;
+			return sendHttp(config);
+		}
 		var formData = new FormData();
 		if (config.data) {
 			for (var key in config.data) {
