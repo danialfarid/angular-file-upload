@@ -73,19 +73,31 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
 		if (config.data) {
-			for (var key in config.data) {
-				var val = config.data[key];
-				if (!config.formDataAppender) {
-					if (typeof config.transformRequest == 'function') {
-						val = config.transformRequest(val);
-					} else {
-						for (var i = 0; i < config.transformRequest.length; i++) {
-							var fn = config.transformRequest[i];
-							if (typeof fn == 'function') {
-								val = fn(val);
-							}
-						}
+			// recreate function to get header like angular headerGetter function
+			var headerGetter = function(name) {
+				if (name) {
+					return config.headers[lowercase(name)] || null;
+				}
+				return config.headers;
+			};
+
+			// Move the preprocessing parameters to keep default behavior (process all parameters at the same time)
+			if (typeof config.transformRequest == 'function') {
+				config.data = config.transformRequest(config.data, headerGetter);
+			} else {
+				for (var i = 0; i < config.transformRequest.length; i++) {
+					var fn = config.transformRequest[i];
+					if (typeof fn == 'function') {
+						config.data = fn(config.data, headerGetter, config.transformRequest);
 					}
+				}
+			}
+
+			// Parse from json data (processed by default by first transformRequest) and add them to form data or using the formDataAppender
+			var dataParsed = angular.fromJson(config.data);
+			for (var key in dataParsed) {
+				var val = dataParsed[key];
+				if (!config.formDataAppender) {
 					formData.append(key, val);
 				} else {
 					config.formDataAppender(formData, key, val);
