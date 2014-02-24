@@ -37,7 +37,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 							});
 						}
 					}, false);
-				}	
+				};
 			};
 		}
 			
@@ -46,7 +46,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		promise.progress = function(fn) {
 			config.progress = fn;
 			return promise;
-		};		
+		};
 		promise.abort = function() {
 			if (config.__XHR) {
 				$timeout(function() {
@@ -54,7 +54,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 				});
 			}
 			return promise;
-		};		
+		};
 		promise.then = (function(promise, origThen) {
 			return function(s, e, p) {
 				config.progress = p || config.progress;
@@ -66,26 +66,38 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		})(promise, promise.then);
 		
 		return promise;
-	};
+	}
 	this.upload = function(config) {
 		config.headers = config.headers || {};
 		config.headers['Content-Type'] = undefined;
 		config.transformRequest = config.transformRequest || $http.defaults.transformRequest;
 		var formData = new FormData();
 		if (config.data) {
-			for (var key in config.data) {
-				var val = config.data[key];
-				if (!config.formDataAppender) {
-					if (typeof config.transformRequest == 'function') {
-						val = config.transformRequest(val);
-					} else {
-						for (var i = 0; i < config.transformRequest.length; i++) {
-							var fn = config.transformRequest[i];
-							if (typeof fn == 'function') {
-								val = fn(val);
-							}
-						}
+			// recreate function to get header like angular headerGetter function
+			var headerGetter = function(name) {
+				if (name) {
+					return config.headers[lowercase(name)] || null;
+				}
+				return config.headers;
+			};
+
+			// Move the preprocessing parameters to keep default behavior (process all parameters at the same time)
+			if (typeof config.transformRequest == 'function') {
+				config.data = config.transformRequest(config.data, headerGetter);
+			} else {
+				for (var i = 0; i < config.transformRequest.length; i++) {
+					var fn = config.transformRequest[i];
+					if (typeof fn == 'function') {
+						config.data = fn(config.data, headerGetter, config.transformRequest);
 					}
+				}
+			}
+
+			// Parse from json data (processed by default by first transformRequest) and add them to form data or using the formDataAppender
+			var dataParsed = angular.fromJson(config.data);
+			for (var key in dataParsed) {
+				var val = dataParsed[key];
+				if (!config.formDataAppender) {
 					formData.append(key, val);
 				} else {
 					config.formDataAppender(formData, key, val);
@@ -97,9 +109,9 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 		var fileFormName = config.fileFormDataName || 'file';
 		
 		if (Object.prototype.toString.call(config.file) === '[object Array]') {
-			var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
-			for (var i = 0; i < config.file.length; i++) {						         
-				formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
+			var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]';
+			for (var j = 0; j < config.file.length; j++) {
+				formData.append(isFileFormNameString ? fileFormName + j : fileFormName[j], config.file[j], config.file[j].name);
 			}
 		} else {
 			formData.append(fileFormName, config.file, config.file.name);
@@ -111,7 +123,7 @@ angularFileUpload.service('$upload', ['$http', '$rootScope', '$timeout', functio
 	};
 	this.http = function(config) {
 		return sendHttp(config);
-	}
+	};
 }]);
 
 angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', function($parse, $http, $timeout) {
@@ -120,7 +132,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', fun
 		elem.bind('change', function(evt) {
 			var files = [], fileList, i;
 			fileList = evt.target.files;
-			if (fileList != null) {
+			if (fileList !== null) {
 				for (i = 0; i < fileList.length; i++) {
 					files.push(fileList.item(i));
 				}
@@ -170,7 +182,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$http', '$timeout', funct
 				evt.preventDefault();
 				elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				var files = [], fileList = evt.dataTransfer.files, i;
-				if (fileList != null) {
+				if (fileList !== null) {
 					for (i = 0; i < fileList.length; i++) {
 						files.push(fileList.item(i));
 					}
