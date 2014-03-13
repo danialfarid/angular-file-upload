@@ -132,9 +132,24 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', fun
 				});
 			});
 		});
-		elem.bind('click', function(){
-			this.value = null;
-		});
+
+        var fileInputEl = null;
+        var isFileInput = elem.is('input[type="file"]');
+
+        if (isFileInput)
+            fileInputEl = elem;
+        else {
+            fileInputEl = angular.element('<input type="file" style="display: none" />');
+            elem.append(fileInputEl);
+        }
+
+        elem.bind('click', function (evt) {
+            fileInputEl.value = null;
+            // don't rethrow the same event for the same element.
+            if (evt.target == fileInputEl.get(0)) return true;
+            if (!isFileInput)
+                fileInputEl.trigger('click');
+        });
 	};
 } ]);
 
