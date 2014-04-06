@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version 1.2.8
+ * @version 1.2.9
  */
 (function() {
 	
@@ -131,23 +131,25 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', fun
 			});
 		});
 
-        var fileInputEl = null;
-        var isFileInput = elem.is('input[type="file"]');
+        var isFileInput = (elem.attr('type') && elem.attr('type').toLowerCase() == 'file') || false;
 
-        if (isFileInput)
-            fileInputEl = elem;
-        else {
-            fileInputEl = angular.element('<input type="file" style="display: none" />');
-            elem.append(fileInputEl);
-        }
-
-        elem.bind('click', function (evt) {
-            fileInputEl.value = null;
-            // don't rethrow the same event for the same element.
-            if (evt.target == fileInputEl.get(0)) return true;
-            if (!isFileInput)
-                fileInputEl.trigger('click');
-        });
+        if (!isFileInput) {
+            var fileInputEl = angular.element('<input type="file" />')
+            	.css("top", 0)
+            	.css("bottom", 0)
+            	.css("left", 0)
+            	.css("right", 0)
+            	.css("width", "100%")
+            	.css("opacity", 0)
+            	.css("position", "absolute")
+            	.attr("title", "Drop file or click here to upload"); // better than browser's default title
+            elem
+            	.append(fileInputEl)
+        		.css("position", "relative");
+        } else
+			elem.bind('click', function(){
+				this.value = null;
+			});
 	};
 } ]);
 

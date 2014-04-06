@@ -2,12 +2,6 @@ body {
 	font-family: Helvetica, arial, freesans, clean, sans-serif;	
 }
 
-input[type="file"] {	
-	width: 6.3em \0/IE9;
-	height: 1.5em;
-	margin: 5px;
-}
-
 input[multiple] {
 	width: 6.2em \0/IE9;
 }

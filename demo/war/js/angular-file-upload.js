@@ -130,9 +130,26 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$http', '$timeout', fun
 				});
 			});
 		});
-		elem.bind('click', function(){
-			this.value = null;
-		});
+
+        var isFileInput = (elem.attr('type') && elem.attr('type').toLowerCase() == 'file') || false;
+
+        if (!isFileInput) {
+            var fileInputEl = angular.element('<input type="file" />')
+            	.css("top", 0)
+            	.css("bottom", 0)
+            	.css("left", 0)
+            	.css("right", 0)
+            	.css("width", "100%")
+            	.css("opacity", 0)
+            	.css("position", "absolute")
+            	.attr("title", "Drop file or click here to upload"); // better than browser's default title
+            elem
+            	.append(fileInputEl)
+        		.css("position", "relative");
+        } else
+			elem.bind('click', function(){
+				this.value = null;
+			});
 	};
 } ]);
 
