@@ -39,7 +39,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 							});
 						}
 					}, false);
-				}	
+				};
 			};
 		}
 

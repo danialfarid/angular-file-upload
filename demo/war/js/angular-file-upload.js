@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive with http post and progress
  * @author  Danial  <danial.farid@gmail.com>
- * @version <%= pkg.version %>
+ * @version 1.3.1
  */
 (function() {
 	
@@ -21,6 +21,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 		if (window.XMLHttpRequest.__isShim) {
 			config.headers['__setXHR_'] = function() {
 				return function(xhr) {
+					if ( ! xhr) return;
 					config.__XHR = xhr;
 					config.xhrFn && config.xhrFn(xhr);
 					xhr.upload.addEventListener('progress', function(e) {
@@ -38,7 +39,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 							});
 						}
 					}, false);
-				}	
+				};
 			};
 		}
 
