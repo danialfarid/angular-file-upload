@@ -152,6 +152,16 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 		elem.bind('click', function(){
 			this.value = null;
 		});
+		
+		// need to add another listener for touch screens
+		if (('ontouchstart' in window) ||
+			(navigator.maxTouchPoints > 0) ||
+			(navigator.msMaxTouchPoints > 0)) {
+				elem.bind('touchend', function(e){
+					e.preventDefault();
+					e.target.click();
+				});
+		}
 	};
 } ]);
 
