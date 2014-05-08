@@ -2,7 +2,8 @@ angular.module('fileUpload', [ 'angularFileUpload' ]);
 
 var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http, $timeout, $upload) {
 	$scope.fileReaderSupported = window.FileReader != null;
-	$scope.uploadRightAway = true;
+	$scope.uploadRightAway = false;
+	$scope.upFiles = [];//way to bind in the $files data
 	$scope.changeAngularVersion = function() {
 		window.location.hash = $scope.angularVersion;
 		window.location.reload(true);
@@ -28,6 +29,7 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 		$scope.upload = [];
 		$scope.uploadResult = [];
 		$scope.selectedFiles = $files;
+		$scope.upFiles = $files;//populate the scope var so it can be used to "startAll"
 		$scope.dataUrls = [];
 		for ( var i = 0; i < $files.length; i++) {
 			var $file = $files[i];
@@ -48,6 +50,14 @@ var MyCtrl = [ '$scope', '$http', '$timeout', '$upload',  function($scope, $http
 			}
 		}
 	}
+	// gets $files from $scope.upFiles
+	$scope.startAll = function($files){
+		$scope.progress = [];
+		for ( var i = 0; i < $files.length; i++) {
+			$scope.progress[i] = -1;
+			$scope.start(i);
+		}
+	};
 	
 	$scope.start = function(index) {
 		$scope.progress[index] = 0;

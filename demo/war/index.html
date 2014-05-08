@@ -40,6 +40,9 @@ document.write('<script type="text/javascript" src="https://ajax.googleapis.com/
 		or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" ng-file-select="onFileSelect($files)" multiple>
 		<br/>
 		<br/>
+		<button ng-show="!uploadRightAway" ng-click="startAll(upFiles)">Start All</button>
+		<br />
+		<br />
 		<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
 		<div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
 		<br/>
