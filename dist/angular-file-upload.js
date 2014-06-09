@@ -4,7 +4,7 @@
  * @version 1.4.0
  */
 (function() {
-	
+
 var angularFileUpload = angular.module('angularFileUpload', []);
 
 angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $timeout) {
@@ -70,7 +70,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 				return result;
 			};
 		})(promise, promise.then);
-		
+
 		return promise;
 	}
 
@@ -110,7 +110,7 @@ angularFileUpload.service('$upload', ['$http', '$timeout', function($http, $time
 				var fileFormName = config.fileFormDataName || 'file';
 
 				if (Object.prototype.toString.call(config.file) === '[object Array]') {
-					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]'; 
+					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]';
 					for (var i = 0; i < config.file.length; i++) {
 						formData.append(isFileFormNameString ? fileFormName + i : fileFormName[i], config.file[i], config.file[i].name);
 					}
@@ -153,7 +153,7 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 //		elem.bind('click', function(){
 //			this.value = null;
 //		});
-		
+
 		// touch screens
 		if (('ontouchstart' in window) ||
 				(navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
@@ -177,7 +177,7 @@ angularFileUpload.directive('ngFileDropAvailable', [ '$parse', '$timeout', funct
 } ]);
 
 angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($parse, $timeout) {
-	return function(scope, elem, attr) {		
+	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var cancel = null;
 			var fn = $parse(attr['ngFileDrop']);
@@ -192,27 +192,38 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 					elem.removeClass(attr['ngFileDragOverClass'] || "dragover");
 				});
 			}, false);
-			
+
 			var processing = 0;
 			function traverseFileTree(files, item) {
-				if (item.isDirectory) {
-					var dirReader = item.createReader();
-					processing++;
-					dirReader.readEntries(function(entries) {
-						for (var i = 0; i < entries.length; i++) {
-							traverseFileTree(files, entries[i]);
-						}
-						processing--;
-					});
-				} else {
-					processing++;
-		    	    item.file(function(file) {
-		    	    	processing--;
-		    	    	files.push(file);
-		    	    });
-	    	  }
-			}
-			
+                function isASCII(str) {
+                    return /^[\000-\177]*$/.test(str);
+                }
+
+                var entry = item.webkitGetAsEntry();
+
+                if (entry.isDirectory) {
+                    var dirReader = entry.createReader();
+                    processing++;
+                    dirReader.readEntries(function(entries) {
+                        for (var i = 0; i < entries.length; i++) {
+                            traverseFileTree(files, entries[i]);
+                        }
+                        processing--;
+                    });
+                } else {
+                    processing++;
+                    if (isASCII(entry.name)) {
+                        entry.file(function(file) {
+                            processing--;
+                            files.push(file);
+                        });
+                    } else {
+                        processing--;
+                        files.push(item.getAsFile());
+                    }
+                }
+            }
+
 			elem[0].addEventListener("drop", function(evt) {
 				evt.stopPropagation();
 				evt.preventDefault();
@@ -220,7 +231,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', function($pars
 				var files = [], items = evt.dataTransfer.items;
 				if (items && items.length > 0 && items[0].webkitGetAsEntry) {
 					for (var i = 0; i < items.length; i++) {
-						traverseFileTree(files, items[i].webkitGetAsEntry());
+						traverseFileTree(files, items[i]);
 					}
 				} else {
 					var fileList = evt.dataTransfer.files;
