@@ -229,7 +229,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 				leaveTimeout = $timeout(function() {
 					elem.removeClass(elem[0].__drag_over_class_);
 					elem[0].__drag_over_class_ = null;
-				});
+				}, 200);
 			}, false);
 			var fn = $parse(attr['ngFileDrop']);
 			elem[0].addEventListener("drop", function(evt) {
