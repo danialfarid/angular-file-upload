@@ -120,7 +120,7 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 				if (Object.prototype.toString.call(config.file) === '[object Array]') {
 					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]';
 					for (var i = 0; i < config.file.length; i++) {
-						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i], 
+						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], new Blob(config.file[i]), 
 								(config.fileName && config.fileName[i]) || config.file[i].name);
 					}
 				} else {
