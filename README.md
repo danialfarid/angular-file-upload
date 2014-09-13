@@ -21,8 +21,8 @@ Table of Content:
 * Supports CORS
 * All `non-HTML5` code is in a separate shim file and could be easily removed if you only supports `HTML5`. (html5-shim.js is needed for `progress` event though)
 * Flash `FileAPI` will be loaded on demand for `non-HTML5` FormData browsers so no extra load for `HTML5` browsers.
-* `$upload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
-* `$upload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the `Content-Type` of the file to CouchDB, imgur, etc... for `HTML5` `FileReader` browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* `fileUpload` method can be configured to be either `POST` or `PUT` for HTML5 browsers.
+* `fileUpload.http()` enables progress event for angular http `POST`/`PUT` requests. You can upload file content with the `Content-Type` of the file to CouchDB, imgur, etc... for `HTML5` `FileReader` browsers. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 
 ##<a name="usage"></a> Usage
 
@@ -53,12 +53,12 @@ JS:
 //inject angular file upload directives and service.
 angular.module('myApp', ['angularFileUpload']);
 
-var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
+var MyCtrl = [ '$scope', 'fileUpload', function($scope, fileUpload) {
   $scope.onFileSelect = function($files) {
     //$files: an array of files selected, each file has name, size, and type.
     for (var i = 0; i < $files.length; i++) {
       var file = $files[i];
-      $scope.upload = $upload.upload({
+      $scope.upload = fileUpload.upload({
         url: 'server/upload/url', //upload.php script, node.js route, or servlet url
         //method: 'POST' or 'PUT',
         //headers: {'header-key': 'header-value'},
@@ -84,7 +84,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
     /* alternative way of uploading, send the file binary with the file's content-type.
        Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
        It could also be used to monitor the progress of a normal http post/put request with large data*/
-    // $scope.upload = $upload.http({...})  see 88#issuecomment-31366487 for sample code.
+    // $scope.upload = fileUpload.http({...})  see 88#issuecomment-31366487 for sample code.
   };
 }];
 ```
@@ -94,7 +94,7 @@ var MyCtrl = [ '$scope', '$upload', function($scope, $upload) {
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
 If you want a cross browser approach you need to iterate through files and upload them one by one like the code above. This is due to the limitation of Flash file upload.
 
-**$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+**fileUpload.http()**: You can also use `fileUpload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
 This equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
