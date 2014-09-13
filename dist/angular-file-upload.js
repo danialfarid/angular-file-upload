@@ -7,7 +7,7 @@
 
 var angularFileUpload = angular.module('angularFileUpload', []);
 
-angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
+angularFileUpload.service('fileUpload', ['$http', '$q', '$timeout', function($http, $q, $timeout) {
 	function sendHttp(config) {
 		config.method = config.method || 'POST';
 		config.headers = config.headers || {};
@@ -204,9 +204,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 	return function(scope, elem, attr) {
 		if ('draggable' in document.createElement('span')) {
 			var leaveTimeout = null;
-			var stopPropagation = angular.isUndefined(attr['ngFileDropAllowPropagation']);
 			elem[0].addEventListener("dragover", function(evt) {
-				if (stopPropagation) evt.stopPropagation();
 				evt.preventDefault();
 				$timeout.cancel(leaveTimeout);
 				if (!elem[0].__drag_over_class_) {
@@ -223,7 +221,6 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 				elem.addClass(elem[0].__drag_over_class_);
 			}, false);
 			elem[0].addEventListener("dragenter", function(evt) {
-				if (stopPropagation) evt.stopPropagation();
 				evt.preventDefault();
 			}, false);
 			elem[0].addEventListener("dragleave", function(evt) {
