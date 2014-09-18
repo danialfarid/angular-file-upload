@@ -172,6 +172,11 @@ Make sure to load the scripts in your html file exactly in this order as describ
 <script src="angular-file-upload(.min).js"></script> 
 ```
 
+Also make sure to include the file in the app-level dependencies, like so:
+```
+angular.module('kbase', ['ngRoute', ..., 'angularFileUpload'])
+```
+
 Or for yeoman with bower automatic include:
 ```
 bower install ng-file-upload -save
