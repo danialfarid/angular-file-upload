@@ -213,6 +213,7 @@ angularFileUpload.directive('ngFileDrop', [ '$parse', '$timeout', '$location', f
 		if ('draggable' in document.createElement('span')) {
 			var leaveTimeout = null;
 			elem[0].addEventListener("dragover", function(evt) {
+        evt.stopPropagation();
 				evt.preventDefault();
 				$timeout.cancel(leaveTimeout);
 				if (!elem[0].__drag_over_class_) {
