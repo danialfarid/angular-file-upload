@@ -96,7 +96,10 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 						var val = origData[key];
 						config.formDataAppender(formData, key, val);
 					}
-				} else {
+				}else if (config.isJson) {
+		            formData.append('data', new Blob([angular.toJson(origData)], { type: "application/json" }));
+				}
+				else {
 					for (var key in origData) {
 						var val = origData[key];
 						if (typeof origTransformRequest == 'function') {
