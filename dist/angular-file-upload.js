@@ -189,6 +189,8 @@ angularFileUpload.directive('ngFileSelect', [ '$parse', '$timeout', function($pa
 					$files : files,
 					$event : evt
 				});
+				// resets the input value so you can upload the same file again
+				elem.val(null);
 			});
 		});
 		// removed this since it was confusing if the user click on browse and then cancel #181
