@@ -150,6 +150,24 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 
 #### <a name="php"></a>PHP
 [ToDo] Please contribute if you have working sample.
+```
+
+$upload.upload({
+    url: 'api/upload-image.php', 
+    headers: {'Content-Type': file.type},
+    method: 'POST',
+    data: file,
+    file: file, 
+})
+
+```
+
+```
+  $filename = $_FILES['file']['name'];
+  $destination = '../assets/img/users/' . $filename;
+  move_uploaded_file( $_FILES['file']['tmp_name'] , $destination );
+```
+
 #### <a name="net"></a>.Net
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
