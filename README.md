@@ -150,6 +150,22 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 
 #### <a name="php"></a>PHP
 [ToDo] Please contribute if you have working sample.
+
+#####AngularJs
+```
+scope.upload = $upload.upload({
+    url: '/api/upload.php', 
+    method: 'POST',
+    file: file, 
+})
+```
+#####PHP
+```
+  $filename = $_FILES['file']['name'];
+  $destination = '../img/temp/' . $filename;    // Set Path Relative to This File's Location
+  move_uploaded_file( $_FILES['file']['tmp_name'], $destination );
+```
+
 #### <a name="net"></a>.Net
 Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
