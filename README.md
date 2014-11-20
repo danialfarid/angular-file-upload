@@ -150,22 +150,20 @@ You can find the sample server code in Java/GAE [here](https://github.com/danial
 
 #### <a name="php"></a>PHP
 [ToDo] Please contribute if you have working sample.
-```
 
-$upload.upload({
-    url: 'api/upload-image.php', 
-    headers: {'Content-Type': file.type},
+#####AngularJs
+```
+scope.upload = $upload.upload({
+    url: '/api/upload.php', 
     method: 'POST',
-    data: file,
     file: file, 
 })
-
 ```
-
+#####PHP
 ```
   $filename = $_FILES['file']['name'];
-  $destination = '../assets/img/users/' . $filename;
-  move_uploaded_file( $_FILES['file']['tmp_name'] , $destination );
+  $destination = '../img/temp/' . $filename;    // Set Path Relative to This File's Location
+  move_uploaded_file( $_FILES['file']['tmp_name'], $destination );
 ```
 
 #### <a name="net"></a>.Net
