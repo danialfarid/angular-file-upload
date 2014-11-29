@@ -221,6 +221,8 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout) {
 					$files : files,
 					$event : evt
 				});
+				// resets the input value so you can upload the same file again
+				elem.val(null);
 			});
 		});
 	}
