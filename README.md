@@ -49,7 +49,9 @@ HTML:
                                                   // you can use $scope.$watch('myFiles') instead
     multiple="true|false" // default false, allows selecting multiple files. 
                           // (value is ignored for input file only so remove this attr for no multiple)
-    accept="image/*,*.pdf,*.xml" // wildcard filter for file types allowed (comma separated)
+    accept="image/*,application/pdf" // wildcard filter for file types allowed (comma separated).
+                                 // Value must comply with 'accept' attribute spec as [defined here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#attr-accept). 
+                                 // Either list accepted mime types or list accepted file extensions, dont mix them up.
     resetOnClick="true|false" // default true, reset the value to null and clear selected files when
                               // user cancels file select popup. (default behaviour in Chrome)
 >Upload</button>
@@ -80,7 +82,7 @@ Sample:
 <button ng-file-select ng-model="files" multiple="true">Attach Any File</button>
 <div ng-file-drop ng-model="files" class="drop-box" 
     drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}"
-    multiple="true" allow-dir="true" accept="image/*,*pdf">
+    multiple="true" allow-dir="true" accept="image/*,application/pdf">
             Drop Images or PDFs files here
 </div>
 <div ng-no-file-drop>File Farg/Drop is not supported for this browser</div>
