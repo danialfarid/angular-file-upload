@@ -141,8 +141,8 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function($http,
 				if (Object.prototype.toString.call(config.file) === '[object Array]') {
 					var isFileFormNameString = Object.prototype.toString.call(fileFormName) === '[object String]';
 					for (var i = 0; i < config.file.length; i++) {
-						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i], 
-								(config.fileName && config.fileName[i]) || config.file[i].name);
+						formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i][0], 
+								(config.fileName && config.fileName[i]) || config.file[i][0].name);
 					}
 				} else {
 					formData.append(fileFormName, config.file, config.fileName || config.file.name);
