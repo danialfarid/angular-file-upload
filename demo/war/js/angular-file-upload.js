@@ -309,7 +309,7 @@ function handleDrop(scope, elem, attr, ngModel, $parse, $timeout, $location) {
 	var available = dropAvailable();
 	if (attr['dropAvailable']) {
 		$timeout(function() {
-			scope.dropAvailable ? scope.dropAvailable.value = available : scope.dropAvailable = available;
+			scope[attr.dropAvailable] ? scope[attr.dropAvailable].value = available : scope[attr.dropAvailable] = available;
 		});
 	}
 	if (!available) {
