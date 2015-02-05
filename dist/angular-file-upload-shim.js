@@ -1,8 +1,8 @@
 /**!
- * AngularJS file upload/drop directive with progress and abort
+ * AngularJS file upload/drop directive and service with progress and abort
  * FileAPI Flash shim for old browsers not supporting FormData 
  * @author  Danial  <danial.farid@gmail.com>
- * @version 2.1.1
+ * @version 3.0.1
  */
 
 (function() {
@@ -131,7 +131,7 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 									xhr.getAllResponseHeaders = function(){};
 									_this.complete(null, {status: 204, statusText: 'No Content'});
 								}
-							}, 10000);
+							}, FileAPI.noContentTimeout || 10000);
 						}
 					},
 					headers: xhr.__requestHeaders
@@ -166,27 +166,32 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 		}
 		var el = angular.element(elem);
 		if (!el.attr('disabled')) {
-			if (!el.hasClass('js-fileapi-wrapper') && (el.attr('ng-file-select') != null || el.attr('data-ng-file-select') != null ||
-					(el.attr('ng-file-generated-elem') && 
-							(el.parent().attr('ng-file-select') != null || el.parent().attr('data-ng-file-select') != null)))) {
-				if (FileAPI.wrapInsideDiv) {
-					var wrap = document.createElement('div');
-					wrap.innerHTML = '<div class="js-fileapi-wrapper" style="position:relative; overflow:hidden"></div>';
-					wrap = wrap.firstChild;
-					var parent = elem.parentNode;
-					parent.insertBefore(wrap, elem);
-					parent.removeChild(elem);
-					wrap.appendChild(elem);
-				} else {
-					el.addClass('js-fileapi-wrapper');
-					if (el.attr('ng-file-generated-elem')) {
+			var hasFileSelect = false;
+			for (var i = 0; i < el[0].attributes.length; i++) {
+				var attrib = el[0].attributes[i];
+				if (attrib.name.indexOf('file-select') !== -1) {
+					hasFileSelect = true;
+					break;
+				}
+			}
+			if (!el.hasClass('js-fileapi-wrapper') && (hasFileSelect || el.attr('__afu_gen__') != null)) {
+				
+				el.addClass('js-fileapi-wrapper');
+				if (el.attr('__afu_gen__') != null) {
+					var ref = (el[0].__refElem__ && angular.element(el[0].__refElem__)) || el;
+					while (ref && !ref.attr('__refElem__')) {
+						ref = angular.element(ref[0].nextSibling);
+					}
+					ref.bind('mouseover', function() {
 						if (el.parent().css('position') === '' || el.parent().css('position') === 'static') {
 							el.parent().css('position', 'relative');
 						}
-						el.css('top', 0).css('bottom', 0).css('left', 0).css('right', 0).css('width', '100%').css('height', '100%').
-							css('padding', 0).css('margin', 0);
-						el.parent().unbind('click', el.parent().__afu_fileClickDelegate__);
-					}
+						el.css('position', 'absolute').css('top', ref[0].offsetTop + 'px').css('left', ref[0].offsetLeft + 'px')
+							.css('width', ref[0].offsetWidth + 'px').css('height', ref[0].offsetHeight + 'px')
+							.css('padding', ref.css('padding')).css('margin', ref.css('margin')).css('filter', 'alpha(opacity=0)');
+						ref.attr('onclick', '');
+						el.css('z-index', '1000');
+					});
 				}
 			}
 		}
@@ -250,6 +255,9 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 	window.FormData = FormData = function() {
 		return {
 			append: function(key, val, name) {
+				if (val.__isFileAPIBlobShim) {
+					val = val.data[0];
+				}
 				this.data.push({
 					key: key,
 					val: val,
@@ -258,6 +266,13 @@ if ((window.XMLHttpRequest && !window.FormData) || (window.FileAPI && FileAPI.fo
 			},
 			data: [],
 			__isFileAPIShim: true
+		};
+	};
+
+	window.Blob = Blob = function(b) {
+		return {
+			data: b,
+			__isFileAPIBlobShim: true
 		};
 	};
 
@@ -332,7 +347,7 @@ if (!window.FileReader) {
 		var listener = function(evt) {
 			if (!loadStarted) {
 				loadStarted = true;
-				_this.onloadstart && this.onloadstart(constructEvent('loadstart', evt));
+				_this.onloadstart && _this.onloadstart(constructEvent('loadstart', evt));
 			}
 			if (evt.type === 'load') {
 				_this.onloadend && _this.onloadend(constructEvent('loadend', evt));
