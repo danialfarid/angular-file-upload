@@ -1,9 +1,9 @@
-angular-file-upload
+ng-file-upload
 ===================
 
 Lightweight Angular JS directive to upload files.<br/><br/>**Here is the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page**.<br/> To help development of this module give it a thumbs up at [ngmodules](http://ngmodules.org/modules/angular-file-upload) or get me a <a target="_blank" href="https://angular-file-upload.appspot.com/donate.html">cup of tea <img src="https://angular-file-upload.appspot.com/img/tea.png" width="40" height="24" title="Icon made by Freepik.com"></a>.
 
-**Migration notes: [version 3.0.0](https://github.com/danialfarid/angular-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/angular-file-upload/releases/tag/3.1.0)
+**Migration notes: [version 3.0.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.0.0) [version 3.1.0](https://github.com/danialfarid/ng-file-upload/releases/tag/3.1.0)
 
 Table of Content:
 * [Features](#features)
@@ -19,7 +19,7 @@ Table of Content:
 ##<a name="features"></a> Features
 * Supports upload progress, cancel/abort upload while in progress, File drag and drop (html5), Directory drag and drop (webkit), CORS, `PUT(html5)`/`POST` methods.
 * Cross browser file upload (`HTML5` and `non-HTML5`) with Flash polyfill [FileAPI](https://github.com/mailru/FileAPI). Allows client side validation/modification before uploading the file
-* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests. See [#88(comment)](https://github.com/danialfarid/angular-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
+* Direct upload to db services CouchDB, imgur, etc... with file's content type using `$upload.http()`. This enables progress event for angular http `POST`/`PUT` requests. See [#88(comment)](https://github.com/danialfarid/ng-file-upload/issues/88#issuecomment-31366487) for discussion and usage.
 * Seperate shim file, FileAPI files are loaded on demand for `non-HTML5` code meaning no extra load/code if you just need HTML5 support.
 * Lightweight using regular `$http` to upload (with shim for non-HTML5 browsers) so all angular `$http` features are available
 
@@ -172,15 +172,15 @@ $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 **Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
-**$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
+**$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/ng-file-upload/issues/88) for more details.
 This is equivalent to angular $http() but allow you to listen to progress event for HTML5 browsers.
 
-**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
+**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 
 **drag and drop styling**: For file drag and drop, `drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
 It could also be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. 
 `reject` param will only work in Chrome browser which provide information about dragged over content. However some file types are reported as empty by Chrome even though they will have correct type when they are dropped, so if your `accept` attribute wildcard depends on file types rather than file extensions it may not work for those files if their type is not reported by Chrome. 
-`delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
+`delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/ng-file-upload/issues/277).
 
 ##<a name="old_browsers"></a> Old browsers
 
@@ -209,27 +209,27 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 ```
 **Old browsers known issues**: 
 * Because of a Flash limitation/bug if the server doesn't send any response body the status code of the response will be always `204 'No Content'`. So if you have access to your server upload code at least return a character in the response for the status code to work properly.
-* Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
-* Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
-* In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/angular-file-upload/issues/310)
-* Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/angular-file-upload/issues/261)
+* Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/ng-file-upload/issues/111) [#224](https://github.com/danialfarid/ng-file-upload/issues/224) [#129](https://github.com/danialfarid/ng-file-upload/issues/129)
+* Due to Flash bug [#92](https://github.com/danialfarid/ng-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
+* In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/ng-file-upload/issues/310)
+* Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/ng-file-upload/issues/261)
 
 ##<a name="server"></a>Server Side
 
 * <a name="java"></a>**Java**
-You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
+You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 * <a name="spring"></a>**Spring MVC**
-[Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
+[Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
 * <a name="node"></a>**Node.js** 
-[Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
-[Another wiki](https://github.com/danialfarid/angular-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
+[Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
+[Another wiki](https://github.com/danialfarid/ng-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
 * <a name="rails"></a>**Rails**
-[Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank)
-**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
+[Wiki Sample](https://github.com/danialfarid/ng-file-upload/wiki/Rails-Example) provided by [guptapriyank](https://github.com/guptapriyank)
+**Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/ng-file-upload/issues/207)
 * <a name="php"></a>**PHP**
-[Wiki Sample] (https://github.com/danialfarid/angular-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/angular-file-upload/issues/475)
+[Wiki Sample] (https://github.com/danialfarid/ng-file-upload/wiki/PHP-Example) and related issue [only one file in $_FILES when uploading multiple files] (https://github.com/danialfarid/ng-file-upload/issues/475)
 * <a name="net"></a>**.Net**
-Sample client and server code [demo/C#] (https://github.com/danialfarid/angular-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
+Sample client and server code [demo/C#] (https://github.com/danialfarid/ng-file-upload/tree/master/demo/C%23) provided by [AtomStar](https://github.com/AtomStar)
 
 #### <a name="s3"></a>Amazon AWS S3 Upload
 The <a href="https://angular-file-upload.appspot.com/" target="_blank">demo</a> page has an option to upload to S3.
@@ -315,7 +315,7 @@ If you have Node.js there is a separate github project created by [Nukul Bhasin]
 
 ##<a name="cors"></a>CORS
 To support CORS upload your server needs to allow cross domain requests. You can achive that by having a filter or interceptor on your upload file server to add CORS headers to the response similar to this:
-([sample java code](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
+([sample java code](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/com/df/angularfileupload/CORSFilter.java))
 ```java
 httpResp.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS");
 httpResp.setHeader("Access-Control-Allow-Origin", "your.other.server.com");
@@ -335,7 +335,7 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 ##<a name="install"></a> Install
 
 ####<a name="manual"></a> Manual download 
-Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases)
+Download latest release from [here](https://github.com/danialfarid/ng-file-upload-bower/releases)
 
 ####<a name="bower"></a> Bower
 ```sh
@@ -369,7 +369,7 @@ npm install ng-file-upload
 
 ##<a name="contrib"></a> Issues & Contribution
 
-For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/angular-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/angular-file-upload/issues/new). If you need support send me an [email](danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
+For questions, bug reports, and feature request please search through existing [issue](https://github.com/danialfarid/ng-file-upload/issues) and if you don't find and answer open a new one  [here](https://github.com/danialfarid/ng-file-upload/issues/new). If you need support send me an [email](danial.farid@gmail.com) to set up a session through [HackHands](https://hackhands.com/). You can also contact [me](https://github.com/danialfarid) for any non public concerns.
 
 
 
