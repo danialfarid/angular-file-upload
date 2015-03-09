@@ -9,7 +9,7 @@ Table of Content:
 * [Features](#features)
 * [Usage](#usage)
 * [Old Browsers](#old_browsers)
-* [Server Side](#server) 
+* [Server Side](#server)
   * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
   * [Amazon S3 Upload](#s3)
   * [CORS](#cors)
@@ -30,15 +30,15 @@ Table of Content:
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
-<script src="angular-file-upload-shim.min.js"></script> 
-<script src="angular-file-upload.min.js"></script> 
+<script src="angular-file-upload-shim.min.js"></script>
+<script src="angular-file-upload.min.js"></script>
 
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
     <div class="button" ng-file-select ng-model="files">Upload using model $watch</div>
     <div class="button" ng-file-select ng-file-change="upload($files)">Upload on file change</div>
     Drop File:
-    <div ng-file-drop ng-model="files" class="drop-box" 
+    <div ng-file-drop ng-model="files" class="drop-box"
         drag-over-class="dragover" ng-multiple="true" allow-dir="true"
         accept=".jpg,.png,.pdf">Drop Images or PDFs files here</div>
     <div ng-no-file-drop>File Drag/Drop is not supported for this browser</div>
@@ -88,7 +88,7 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
     accept="'image/*'" // see standard HTML file input accept attribute
     ng-accept="'image/*'|validate($file)" // function or comma separated wildcard to filter files allowed
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
-    input-file-...="..." // if element is not input file the attributes prefix with (data-)input-file- 
+    input-file-...="..." // if element is not input file the attributes prefix with (data-)input-file-
                          // will be added to underlying <input type="file"...> see #462.
 >Upload</button>
 ```
@@ -97,17 +97,18 @@ app.controller('MyCtrl', ['$scope', '$upload', function ($scope, $upload) {
 <div|button|ng-file-drop|...
     ng-file-drop ng-model="myFiles" // binds the dropped files to the scope model
     ng-file-change="fileDropped($files, $event, $rejectedFiles)" //called upon files being dropped
-    ng-multiple="true|false" // default false, allows selecting multiple files. 
+    ng-multiple="true|false" // default false, allows selecting multiple files.
     ng-accept="'.pdf,.jpg'|validate($file)" // function or comma separated wildcard to filter files allowed
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     allow-dir="true|false" // default true, allow dropping files only for Chrome webkit browser
     drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}|myDragOverClass|
-                    calcDragOverClass($event)" 
-              // drag over css class behaviour. could be a string, a function returning class name 
+                    calcDragOverClass($event)"
+              // drag over css class behaviour. could be a string, a function returning class name
               // or a json object {accept: 'c1', reject: 'c2', delay:10}. default "dragover"
               // reject class only works in Chrome.
     drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
+    drop-disabled="isDisabled"    // default false, allows calling context to disable/enable file drop via scope
     stop-propagation="true|false" // default false, whether to propagate drag/drop events.
     hide-on-drop-not-available="true|false" // default true, hides element if file drag&drop is not supported
 >
@@ -124,24 +125,24 @@ var upload = $upload.upload({
   method: 'POST' or 'PUT', default POST,
   headers: {'Authorization': 'xxx'}, // only for html5
   fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...], // to modify the name of the file(s)
-  /* 
+  /*
   file formData name ('Content-Disposition'), server side request form name could be
   an array  of names for multiple files (html5). Default is 'file' */
-  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...], 
-  /* 
+  fileFormDataName: 'myFile' or ['file[0]', 'file[1]', ...],
+  /*
   map of extra form data fields to send along with file. each field will be sent as a form field.
   The values are converted to json string or jsob blob depending on 'sendObjectsAsJsonBlob' option. */
   fields: {key: $scope.myValue, ...},
   /*
-  if the value of a form field is an object it will be sent as 'application/json' blob 
+  if the value of a form field is an object it will be sent as 'application/json' blob
   rather than json string, default false. */
   sendObjectsAsJsonBlob: true|false,
   /* customize how data is added to the formData. See #40#issuecomment-28612000 for sample code. */
   formDataAppender: function(formData, key, val){},
   /*
-  data will be sent as a separate form data field called "data". It will be converted to json string 
+  data will be sent as a separate form data field called "data". It will be converted to json string
   or jsob blob depending on 'sendObjectsAsJsonBlob' option*/
-  data: {}. 
+  data: {}.
   withCredentials: true|false,
   ... and all other angular $http() options could be used here.
 }).progress(function(evt) {
@@ -151,7 +152,7 @@ var upload = $upload.upload({
   console.log('file ' + config.file.name + 'is uploaded successfully. Response: ' + data);
 }).error(...
 /* access or attach event listeners to the underlying XMLHttpRequest */
-}).xhr(function(xhr){xhr.upload.addEventListener(...) 
+}).xhr(function(xhr){xhr.upload.addEventListener(...)
 /* return $http promise then(). Note that this promise does NOT have progress/abort/xhr functions */
 });
 /* then promise (note that returned promise doesn't have progress, xhr and cancel functions. */
@@ -161,15 +162,15 @@ var promise = upload.then(success, error, progress);
 upload.abort();
 
 /* alternative way of uploading, send the file binary with the file's content-type.
-   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed. 
-   It could also be used to monitor the progress of a normal http post/put request. 
+   Could be used to upload files to CouchDB, imgur, etc... html5 FileReader is needed.
+   It could also be used to monitor the progress of a normal http post/put request.
    Note that the whole file will be loaded in browser first so large files could crash the browser.
    You should verify the file size before uploading with $upload.http().
 */
 $upload.http({...})  // See 88#issuecomment-31366487 for sample code.
 ```
 
-**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`). 
+**Upload multiple files**: Only for HTML5 FormData browsers (not IE8-9) if you pass an array of files to `file` option it will upload all of them together in one request. In this case the `fileFormDataName` could be an array of names or a single string. For Rails or depending on your server append square brackets to the end (i.e. `file[]`).
 Non-html5 browsers due to flash limitation will still upload array of files one by one in a separate request. You should iterate over files and send them one by one if you want cross browser solution.
 
 **$upload.http()**: You can also use `$upload.http()` to send the file binary or any data to the server while being able to listen to progress event. See [#88](https://github.com/danialfarid/angular-file-upload/issues/88) for more details.
@@ -178,13 +179,13 @@ This is equivalent to angular $http() but allow you to listen to progress event 
 **Rails progress event**: If your server is Rails and Apache you may need to modify server configurations for the server to support upload progress. See [#207](https://github.com/danialfarid/angular-file-upload/issues/207)
 
 **drag and drop styling**: For file drag and drop, `drag-over-class` could be used to style the drop zone. It can be a function that returns a class name based on the $event. Default is "dragover" string.
-It could also be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs. 
-`reject` param will only work in Chrome browser which provide information about dragged over content. However some file types are reported as empty by Chrome even though they will have correct type when they are dropped, so if your `accept` attribute wildcard depends on file types rather than file extensions it may not work for those files if their type is not reported by Chrome. 
+It could also be a json object `{accept: 'a', 'reject': 'r', delay: 10}` that specify the class name for the accepted or rejected drag overs.
+`reject` param will only work in Chrome browser which provide information about dragged over content. However some file types are reported as empty by Chrome even though they will have correct type when they are dropped, so if your `accept` attribute wildcard depends on file types rather than file extensions it may not work for those files if their type is not reported by Chrome.
 `delay` param is there to fix css3 transition issues from dragging over/out/over [#277](https://github.com/danialfarid/angular-file-upload/issues/277).
 
 ##<a name="old_browsers"></a> Old browsers
 
-For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used. 
+For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used.
 **Note**: You need Flash installed on your browser since `FileAPI` uses Flash to upload files.
 
 These two files  **`FileAPI.min.js`, `FileAPI.flash.swf`** will be loaded by the module on demand (no need to be included in the html) if the browser does not supports HTML5 FormData to avoid extra load for HTML5 browsers.
@@ -194,9 +195,9 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
     //optional need to be loaded before angular-file-upload-shim(.min).js
     FileAPI = {
         //only one of jsPath or jsUrl.
-        jsPath: '/js/FileAPI.min.js/folder/', 
+        jsPath: '/js/FileAPI.min.js/folder/',
         jsUrl: 'yourcdn.com/js/FileAPI.min.js',
-        
+
         //only one of staticPath or flashUrl.
         staticPath: '/flash/FileAPI.flash.swf/folder/',
         flashUrl: 'yourcdn.com/js/FileAPI.flash.swf',
@@ -207,7 +208,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 </script>
 <script src="angular-file-upload-shim.min.js"></script>...
 ```
-**Old browsers known issues**: 
+**Old browsers known issues**:
 * Because of a Flash limitation/bug if the server doesn't send any response body the status code of the response will be always `204 'No Content'`. So if you have access to your server upload code at least return a character in the response for the status code to work properly.
 * Custom headers will not work due to a Flash limitation [#111](https://github.com/danialfarid/angular-file-upload/issues/111) [#224](https://github.com/danialfarid/angular-file-upload/issues/224) [#129](https://github.com/danialfarid/angular-file-upload/issues/129)
 * Due to Flash bug [#92](https://github.com/danialfarid/angular-file-upload/issues/92) Server HTTP error code 400 will be returned as 200 to the client. So avoid returning 400 on your server side for upload response otherwise it will be treated as a success response on the client side.
@@ -220,7 +221,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/angular-file-upload/blob/master/demo/src/com/df/angularfileupload/)
 * <a name="spring"></a>**Spring MVC**
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/spring-mvc-example) provided by [zouroto](https://github.com/zouroto)
-* <a name="node"></a>**Node.js** 
+* <a name="node"></a>**Node.js**
 [Wiki Sample](https://github.com/danialfarid/angular-file-upload/wiki/node.js-example) provided by [chovy](https://github.com/chovy).
 [Another wiki](https://github.com/danialfarid/angular-file-upload/wiki/Node-example) using Express 4.0 and the Multiparty provided by [Jonathan White](https://github.com/JonathanZWhite)
 * <a name="rails"></a>**Rails**
@@ -240,8 +241,8 @@ $upload.upload({
         method: 'POST',
         fields : {
           key: file.name, // the key to store the file on S3, could be file name or customized
-          AWSAccessKeyId: <YOUR AWS AccessKey Id>, 
-          acl: 'private', // sets the access to the uploaded file in the bucket: private or public 
+          AWSAccessKeyId: <YOUR AWS AccessKey Id>,
+          acl: 'private', // sets the access to the uploaded file in the bucket: private or public
           policy: $scope.policy, // base64-encoded json policy (see article below)
           signature: $scope.signature, // base64-encoded signature based on policy string (see article below)
           "Content-Type": file.type != '' ? file.type : 'application/octet-stream', // content type of the file (NotEmpty)
@@ -255,8 +256,8 @@ To generate the policy and signature you need a server side tool as described [t
 These two values are generated from the json policy document which looks like this:
 ```
 {"expiration": "2020-01-01T00:00:00Z",
-"conditions": [ 
-  {"bucket": "angular-file-upload"}, 
+"conditions": [
+  {"bucket": "angular-file-upload"},
   ["starts-with", "$key", ""],
   {"acl": "private"},
   ["starts-with", "$Content-Type", ""],
@@ -334,24 +335,24 @@ For non-HTML5 IE8-9 browsers you would also need a `crossdomain.xml` file at the
 
 ##<a name="install"></a> Install
 
-####<a name="manual"></a> Manual download 
+####<a name="manual"></a> Manual download
 Download latest release from [here](https://github.com/danialfarid/angular-file-upload-bower/releases)
 
 ####<a name="bower"></a> Bower
 ```sh
 #notice 'ng' at the beginning of the module name not 'angular'
-bower install ng-file-upload 
+bower install ng-file-upload
 ```
 ```html
 <script src="angular(.min).js"></script>
 <script src="angular-file-upload-shim(.min).js"></script> <!-- for no html5 browsers support -->
-<script src="angular-file-upload(.min).js"></script> 
+<script src="angular-file-upload(.min).js"></script>
 ```
 
 ####<a name="yeoman"></a> Yeoman with bower automatic include
 ```
 bower install ng-file-upload --save
-bower install ng-file-upload-shim --save 
+bower install ng-file-upload-shim --save
 ```
 bower.json
 ```
