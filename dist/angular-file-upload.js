@@ -233,7 +233,9 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		updateModel(fileList, attr, ngModel, scope, evt);
 	};
 	
-	var fileElem = elem;
+	var fileElem = elem,
+		fileChangeEvent = 'ontouchend' in document ? 'touchend' : 'click';
+
 	if (!isInputTypeFile()) {
 		fileElem = angular.element('<input type="file">')
 		if (elem.attr('multiple')) fileElem.attr('multiple', elem.attr('multiple'));
@@ -253,13 +255,13 @@ function handleFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile
 		fileElem[0].__refElem__ = elem[0];
 		elem.parent()[0].insertBefore(fileElem[0], elem[0])
 		elem.css('overflow', 'hidden');
-		elem.bind('click', function(e) {
+		elem.bind(fileChangeEvent, function(e) {
 			if (!resetAndClick(e)) {
 				fileElem[0].click();
 			}
 		});
 	} else {
-		elem.bind('click', resetAndClick);
+		elem.bind(fileChangeEvent, resetAndClick);
 	}
 	
 	function resetAndClick(evt) {
