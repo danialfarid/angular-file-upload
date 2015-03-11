@@ -1,3 +1,11 @@
+## Forked from
+https://github.com/danialfarid/ng-file-upload
+
+## To resolve issue with open pull request
+https://github.com/danialfarid/ng-file-upload/pull/613
+
+*I will unpublish from bower this module after this issue and pull request is resolved*
+
 angular-file-upload
 ===================
 
