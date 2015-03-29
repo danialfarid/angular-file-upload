@@ -276,7 +276,10 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (fileElem) {
             resetModel(evt);
 
-            fileElem[0].click();
+             // fix for Android browser
+	    $timeout(function() {  
+	    	fileElem[0].click();
+	    }, 0);
         }
         if (isInputTypeFile()) {
             elem.bind('click', clickHandler);
