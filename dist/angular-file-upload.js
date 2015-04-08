@@ -148,7 +148,7 @@ angularFileUpload.service('$upload', ['$http', '$q', '$timeout', function ($http
                                 if (config.sendObjectsAsJsonBlob && typeof val === 'object') {
                                     formData.append(key, new Blob([val], {type: 'application/json'}));
                                 } else {
-                                    formData.append(key, JSON.stringify(val));
+                                    formData.append(key, (null === val ? null : JSON.stringify(val)));
                                 }
                             }
 
