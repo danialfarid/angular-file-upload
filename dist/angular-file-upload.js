@@ -235,7 +235,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (attr.ngCapture) fileElem.attr('capture', $parse(attr.ngCapture)(scope));
         if (attr.ngDisabled) fileElem.attr('disabled', $parse(attr.ngDisabled)(scope));
 
-        fileElem.bind('change', changeFn);
+        fileElem.unbind('change', changeFn).bind('change', changeFn);
     }
 
     function createFileInput(evt) {
@@ -282,7 +282,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
             fileElem[0].click();
         }
         if (isInputTypeFile()) {
-            elem.bind('click', clickHandler);
+            elem.unbind('click', clickHandler).bind('click', clickHandler);
             evt.preventDefault()
         }
     }
@@ -290,7 +290,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
         window.FileAPI.ngfFixIE(elem, createFileInput, changeFn, resetModel);
     } else {
-        elem.bind('click', clickHandler);
+        elem.unbind('click', clickHandler).bind('click', clickHandler);
     }
 }
 
