@@ -26,7 +26,7 @@ Table of Content:
 ##<a name="usage"></a> Usage
 
 ###Sample:
-[jsfiddle http://jsfiddle.net/nmdcwf3w/](http://jsfiddle.net/nmdcwf3w/)
+[jsfiddle http://jsfiddle.net/pz1reeLu](http://jsfiddle.net/pz1reeLu)
 ```html
 <script src="angular.min.js"></script>
 <!-- shim is needed to support non-HTML5 FormData browsers (IE8-9)-->
