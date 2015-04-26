@@ -36,7 +36,7 @@ Table of Content:
 <div ng-app="fileUpload" ng-controller="MyCtrl">
     watching model:
     <div class="button" ngf-select ng-model="files">Upload using model $watch</div>
-    <div class="button" ngf-select ngf-change="upload($files)">Upload on file change</div>
+    <div class="button" ngf-select ng-model="files" ngf-change="upload(files)">Upload on file change</div>
     Image thumbnail: <img ngf-thumbnail="files[0]" class="thumb">
     Drop File:
     <div ngf-drop ng-model="files" class="drop-box" 
