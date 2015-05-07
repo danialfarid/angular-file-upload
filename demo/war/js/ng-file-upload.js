@@ -1,7 +1,7 @@
 /**!
  * AngularJS file upload/drop directive and service with progress and abort
  * @author  Danial  <danial.farid@gmail.com>
- * @version <%= pkg.version %>
+ * @version 4.1.3
  */
 (function () {
 
@@ -28,7 +28,7 @@ if (window.XMLHttpRequest && !window.XMLHttpRequest.__isFileAPIShim) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '<%= pkg.version %>';
+ngFileUpload.version = '4.1.3';
 ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
     function sendHttp(config) {
         config.method = config.method || 'POST';
@@ -232,6 +232,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngfCapture) fileElem.attr('capture', $parse(attr.ngfCapture)(scope));
         if (attr.ngfDisabled) fileElem.attr('disabled', $parse(attr.ngfDisabled)(scope));
+        if (attr.id) fileElem.attr('id', attr.id);
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
             if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'id' && attribute.name !== 'style') {
