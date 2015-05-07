@@ -232,6 +232,7 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         if (attr['accept']) fileElem.attr('accept', attr['accept']);
         if (attr.ngfCapture) fileElem.attr('capture', $parse(attr.ngfCapture)(scope));
         if (attr.ngfDisabled) fileElem.attr('disabled', $parse(attr.ngfDisabled)(scope));
+        if (attr.id) fileElem.attr('id', attr.id);
         for (var i = 0; i < elem[0].attributes.length; i++) {
             var attribute = elem[0].attributes[i];
             if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'id' && attribute.name !== 'style') {
