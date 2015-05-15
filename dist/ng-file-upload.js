@@ -604,7 +604,8 @@ function globStringToRegex(str) {
         if (str.indexOf('.') == 0) {
             str = '*' + str;
         }
-        result = '^' + str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + '-]', 'g'), '\\$&') + '$';
+        result = (angular.equals(str[0], '.') ? '' : '^') +
+        str.replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + '-]', 'g'), '\\$&') + '$';
         result = result.replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
     }
     return result;
