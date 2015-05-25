@@ -229,6 +229,8 @@ function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile) 
         }
     }
 
+    elem.bind('change', changeFn);
+
     function bindAttrToFileInput(fileElem) {
         if (attr.ngfMultiple) fileElem.attr('multiple', $parse(attr.ngfMultiple)(scope));
         if (!$parse(attr.ngfMultiple)(scope)) fileElem.attr('multiple', undefined);
