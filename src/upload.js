@@ -176,8 +176,10 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
             formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i],
               (config.fileName && config.fileName[i]) || config.file[i].name);
           }
-        } else {
+        } else if (Object.prototype.toString.call(config.file) === '[object File]') {
           formData.append(fileFormName, config.file, config.fileName || config.file.name);
+        } else {
+          formData.append(fileFormName, JSON.stringify(config.file));
         }
       }
       return formData;
