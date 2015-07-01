@@ -138,6 +138,7 @@ Drop files here
 #### File preview
 ```html
 <img|audio|video ngf-src="file" //To preview the selected file, sets src attribute to the file's data url.
+    ng-bg-src="file" //To preview the selected file, sets background-image attribute to the file's data url.
     ngf-default-src="'placeholder.jpg'" // default src in case no file is available
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
