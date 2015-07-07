@@ -72,14 +72,14 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
     promise.success = function (fn) {
       promise.then(function (response) {
-        fn(response.data, response.status, response.headers, config);
+        fn(response.data, response.status, response.headers, config, response.statusText);
       });
       return promise;
     };
 
     promise.error = function (fn) {
       promise.then(null, function (response) {
-        fn(response.data, response.status, response.headers, config);
+        fn(response.data, response.status, response.headers, config, response.statusText);
       });
       return promise;
     };
