@@ -88,36 +88,40 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ### Full reference
 
 #### File select
+See [UploadProvider](#UploadProvider) documentation below for the directive defaults and how to configure them for all directive instances.
 
 ```html
 <button|div|input type="file"|ngf-select|...
-    *ngf-select="true" or "false" // default true, enables file select directive on this element
+    *ngf-select="true" or "false" // enables file select directive on this element
     ng-model="myFiles" // binds the selected files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileSelected($files, $event)" // called when files are selected or removed
-    ngf-multiple="true" or "false" // default false, allows selecting multiple files
+    ngf-multiple="true" or "false" // allows selecting multiple files
     ngf-capture="'camera'" or "'other'" // allows mobile devices to capture using camera
     accept="image/*" // see standard HTML file input accept attribute
     ngf-accept="'image/*'" or "validate($file)" // function or comma separated wildcard to filter files allowed
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
-    ngf-keep="true" or "false" // default false, keep the previous ng-model files and append the new files
-    ngf-keep-distinct="true" or "false" // default false, if ngf-keep is set, removes duplicate selected files
-    ngf-reset-on-click="true" or "false" // default true, reset the model and input upon click. see note below.
-    ngf-reset-model-on-click="true" or "false" // default true, reset the model upon click. see note below.
+    ngf-keep="true" or "false" // keep the previous ng-model files and append the new files
+    ngf-keep-distinct="true" or "false" // if ngf-keep is set, removes duplicate selected files
+    ngf-reset-on-click="true" or "false" // reset the model and input upon click. see note below.
+    ngf-reset-model-on-click="true" or "false" // reset the model upon click. see note below.
 >Upload</button>
 ```
+
 #### File drop
+See [UploadProvider](#uploadProvider) documentation below for the directive defaults and how to configure them for all directive instances.
+
 ```html
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
 <div|button|ngf-drop|...
-    *ngf-drop="true" or "false" // default true, enables file drop directive on this element 
+    *ngf-drop="true" or "false" // enables file drop directive on this element 
     ng-model="myFiles" // binds the dropped files to the scope model
     ng-model-rejected="rejFiles" // bind to dropped files that do not match the accept wildcard
     ngf-change="fileDropped($files, $event, $rejectedFiles)" //called when files being dropped
-    ngf-multiple="true" or "false" // default false, allows selecting multiple files. 
+    ngf-multiple="true" or "false" // allows selecting multiple files. 
     ngf-accept="'.pdf,.jpg'" or "validate($file)" // function or comma separated wildcard to filter files allowed
-    ngf-allow-dir="true" or "false" // default true, allow dropping files only for Chrome webkit browser
+    ngf-allow-dir="true" or "false" // allow dropping files only for Chrome webkit browser
     ngf-drag-over-class="{accept:'acceptClass', reject:'rejectClass', delay:100}" or "myDragOverClass" or
                     "calcDragOverClass($event)" 
               // drag over css class behaviour. could be a string, a function returning class name 
@@ -126,8 +130,8 @@ All attributes are optional except ngf-drop and one of ng-model or ngf-change.
               // needs to check the file mime type for it to work.
     ngf-drop-available="dropSupported" // set the value of scope model to true or false based on file
                                   // drag&drop support for this browser
-    ngf-stop-propagation="true" or "false" // default false, whether to propagate drag/drop events.
-    ngf-hide-on-drop-not-available="true" or "false" // default false, hides element if file drag&drop is not supported
+    ngf-stop-propagation="true" or "false" // whether to propagate drag/drop events.
+    ngf-hide-on-drop-not-available="true" or "false" // hides element if file drag&drop is not supported
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
 >
@@ -145,6 +149,31 @@ Drop files here
     ngf-min-size='10' // minimum acceptable file size in bytes
     ngf-max-size='10' // maximum acceptable file size in bytes
 > 
+```
+
+#### [UploadProvider]
+This is used to configure the directives defaults. Any set defaults can still be overridden at an instance level. 
+
+```js
+  UploadProvider.setDefaults({
+    accept: String, // Default: null
+    allowDir: Boolean, // Default: false
+    capture: String, // Default: null
+    disabled: Boolean, // Default: false
+    dragOverClass: String || Object || Function, // Default: 'dragover'
+    dragOverDelay: Number, // Default: 1
+    hideOnDropNotAvailable: Boolean // Default: false
+    keep: Boolean, // Default: false
+    keepDistinct: Boolean, // Default: false
+    maxFileSize: Number, // Default: 9007199254740991
+    minFileSize: Number, // Default: -1
+    multiple: Boolean, // Default: false
+    ngfAccept: String || Function, // Default: null
+    resetOnClick: Boolean, // Default: true
+    resetOnModelClick: Boolean, // Default: true
+    src: String, // Default: ''
+    stopPropagation: Boolean, // Default: false
+  });
 ```
 
 #### Upload service:
