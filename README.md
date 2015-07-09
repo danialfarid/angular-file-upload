@@ -88,7 +88,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
 ### Full reference
 
 #### File select
-See [UploadProvider](#uploadprovider) documentation below for the directive defaults and how to configure them for all directive instances.
+See [UploadProvider](#-uploadprovider) documentation below for the directive defaults and how to configure them for all directive instances.
 
 ```html
 <button|div|input type="file"|ngf-select|...
@@ -110,7 +110,7 @@ See [UploadProvider](#uploadprovider) documentation below for the directive defa
 ```
 
 #### File drop
-See [UploadProvider](#uploadprovider) documentation below for the directive defaults and how to configure them for all directive instances.
+See [UploadProvider](#-uploadprovider) documentation below for the directive defaults and how to configure them for all directive instances.
 
 ```html
 All attributes are optional except ngf-drop and one of ng-model or ngf-change.
@@ -151,7 +151,7 @@ Drop files here
 > 
 ```
 
-#### <a name="uploadprovider"></a> UploadProvider
+####<a name="uploadprovider"></a> UploadProvider
 This is used to configure the directives defaults. Any set defaults can still be overridden at an instance level. 
 
 ```js
