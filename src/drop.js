@@ -59,7 +59,7 @@
       return;
     }
 
-    var disabled = defaults.disabled;
+    var disabled = attr.ngfDrop ? $parse(attr.ngfDrop)(scope) === false : defaults.disabled;
     if (attr.ngfDrop.search(/\W+$files\W+/) === -1) {
       scope.$watch(attr.ngfDrop, function(val) {
         disabled = val === false;
@@ -127,12 +127,12 @@
             validate(scope, $parse, attr, items[i], evt);
         }
       }
-      var clazz = $parse(attr.ngfDragOverClass)(scope, {$event: evt});
+      var clazz = $parse(attr.ngfDragOverClass)(scope, {$event: evt}) || defaults.dragOverClass;
       if (clazz) {
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept) clazz = accepted ? clazz.accept : clazz.reject;
       }
-      return clazz || attr.ngfDragOverClass || defaults.dragOverClass;
+      return clazz || attr.ngfDragOverClass;
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {

@@ -707,12 +707,14 @@ ngFileUpload.version = '5.0.9';
             if (elem.$$ngfRefElem) elem.$$ngfRefElem.remove();
         });
 
-        var disabled = defaults.disabled;
+
+        var disabled = attr.ngfSelect ? $parse(attr.ngfSelect)(scope) === false : defaults.disabled;
         if (attr.ngfSelect.search(/\W+$files\W+/) === -1) {
             scope.$watch(attr.ngfSelect, function (val) {
                 disabled = val === false;
             });
         }
+
         function isInputTypeFile() {
             return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
         }
@@ -875,9 +877,8 @@ ngFileUpload.version = '5.0.9';
         }
 
         var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt}) ||
-            (typeof defaults.ngfAccect === 'function' ? defaults.ngfAccect(file, evt) : defaults.ngfAccect);
-
-        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || defaults.maxFielSize;
+            (typeof defaults.ngfAccept === 'function' ? defaults.ngfAccept(file, evt) : defaults.ngfAccept);
+        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || defaults.maxFileSize;
         var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || defaults.minFileSize;
         if (accept != null && angular.isString(accept)) {
             var regexp = new RegExp(globStringToRegex(accept), 'gi');
@@ -894,7 +895,7 @@ ngFileUpload.version = '5.0.9';
             var keepDistinct = attr.ngfKeepDistinct ? $parse(attr.ngfKeepDistinct)(scope) === true : defaults.keepDistinct;
 
             if (keep) {
-                var prevFiles = (ngModel.$modelValue || []).slice(0);
+                var prevFiles = (ngModel ? ngModel.$modelValue : []).slice(0);
                 if (!files || !files.length) {
                     files = prevFiles;
                 } else if (keepDistinct) {
@@ -1007,7 +1008,7 @@ ngFileUpload.version = '5.0.9';
       return;
     }
 
-    var disabled = defaults.disabled;
+    var disabled = attr.ngfDrop ? $parse(attr.ngfDrop)(scope) === false : defaults.disabled;
     if (attr.ngfDrop.search(/\W+$files\W+/) === -1) {
       scope.$watch(attr.ngfDrop, function(val) {
         disabled = val === false;
@@ -1075,12 +1076,12 @@ ngFileUpload.version = '5.0.9';
             validate(scope, $parse, attr, items[i], evt);
         }
       }
-      var clazz = $parse(attr.ngfDragOverClass)(scope, {$event: evt});
+      var clazz = $parse(attr.ngfDragOverClass)(scope, {$event: evt}) || defaults.dragOverClass;
       if (clazz) {
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept) clazz = accepted ? clazz.accept : clazz.reject;
       }
-      return clazz || attr.ngfDragOverClass || defaults.dragOverClass;
+      return clazz || attr.ngfDragOverClass;
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
