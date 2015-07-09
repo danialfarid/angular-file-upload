@@ -1,4 +1,10 @@
 (function () {
+    var defaults;
+
+    ngFileUpload.run(['Upload', function(Upload) {
+        defaults = Upload.getDefaults();
+    }]);
+
     ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile',
         function ($parse, $timeout, $compile) {
             return {
@@ -33,12 +39,14 @@
             if (elem.$$ngfRefElem) elem.$$ngfRefElem.remove();
         });
 
-        var disabled = false;
+
+        var disabled = attr.ngfSelect ? $parse(attr.ngfSelect)(scope) === false : defaults.disabled;
         if (attr.ngfSelect.search(/\W+$files\W+/) === -1) {
             scope.$watch(attr.ngfSelect, function (val) {
                 disabled = val === false;
             });
         }
+
         function isInputTypeFile() {
             return elem[0].tagName.toLowerCase() === 'input' && attr.type && attr.type.toLowerCase() === 'file';
         }
@@ -72,9 +80,15 @@
         }
 
         function bindAttrToFileInput(fileElem) {
+            if (defaults.multiple) fileElem.attr('multiple', defaults.multiple);
             if (attr.ngfMultiple) fileElem.attr('multiple', $parse(attr.ngfMultiple)(scope));
+
+            if (defaults.capture) fileElem.attr('capture', defaults.capture);
             if (attr.ngfCapture) fileElem.attr('capture', $parse(attr.ngfCapture)(scope));
+
+            if (defaults.accept) fileElem.attr('accept', defaults.accept);
             if (attr.accept) fileElem.attr('accept', attr.accept);
+
             for (var i = 0; i < elem[0].attributes.length; i++) {
                 var attribute = elem[0].attributes[i];
                 if ((isInputTypeFile() && attribute.name !== 'type') ||
@@ -120,7 +134,9 @@
                 evt.preventDefault();
                 evt.stopPropagation();
             }
-            var resetOnClick = $parse(attr.ngfResetOnClick)(scope) !== false;
+
+            var resetOnClick = attr.ngfResetOnClick ? ($parse(attr.ngfResetOnClick)(scope) !== false) : defaults.resetOnClick;
+            var resetOnModelClick = attr.ngfResetModelOnClick ? ($parse(attr.ngfResetModelOnClick)(scope) !== false) : defaults.resetOnModelClick;
             var fileElem = createFileInput(evt, resetOnClick);
 
             function clickAndAssign(evt) {
@@ -134,7 +150,7 @@
 
             if (fileElem) {
                 if (!evt || resetOnClick) fileElem.bind('change', changeFn);
-                if (evt && resetOnClick && $parse(attr.ngfResetModelOnClick)(scope) !== false) resetModel(evt);
+                if (evt && resetOnClick && resetOnModelClick) resetModel(evt);
 
                 // fix for android native browser < 4.4
                 if (shouldClickLater(navigator.userAgent)) {
@@ -192,9 +208,10 @@
             return result;
         }
 
-        var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt});
-        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || 9007199254740991;
-        var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || -1;
+        var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt}) ||
+            (typeof defaults.ngfAccept === 'function' ? defaults.ngfAccept(file, evt) : defaults.ngfAccept);
+        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || defaults.maxFileSize;
+        var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || defaults.minFileSize;
         if (accept != null && angular.isString(accept)) {
             var regexp = new RegExp(globStringToRegex(accept), 'gi');
             accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||
@@ -206,11 +223,14 @@
     ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
                                          files, rejFiles, evt, noDelay) {
         function update() {
-            if ($parse(attr.ngfKeep)(scope) === true) {
-                var prevFiles = (ngModel.$modelValue || []).slice(0);
+            var keep = attr.ngfKeep ? $parse(attr.ngfKeep)(scope) === true : defaults.keep;
+            var keepDistinct = attr.ngfKeepDistinct ? $parse(attr.ngfKeepDistinct)(scope) === true : defaults.keepDistinct;
+
+            if (keep) {
+                var prevFiles = (ngModel ? ngModel.$modelValue : []).slice(0);
                 if (!files || !files.length) {
                     files = prevFiles;
-                } else if ($parse(attr.ngfKeepDistinct)(scope) === true) {
+                } else if (keepDistinct) {
                     var len = prevFiles.length;
                     for (var i = 0; i < files.length; i++) {
                         for (var j = 0; j < len; j++) {
