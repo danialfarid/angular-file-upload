@@ -450,34 +450,43 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 }
 
 var ngFileUpload = angular.module('ngFileUpload', []);
-
 ngFileUpload.version = '5.0.9';
-ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
-  function sendHttp(config) {
-    config.method = config.method || 'POST';
-    config.headers = config.headers || {};
 
-    var deferred = $q.defer();
-    var promise = deferred.promise;
+(function () {
+  var defaults = {
+    accept: null,
+    allowDir: false,
+    capture: null,
+    disabled: false,
+    dragOverClass: 'dragover',
+    dragOverDelay: 1,
+    hideOnDropNotAvailable: false,
+    keep: false,
+    keepDistinct: false,
+    maxFileSize: 9007199254740991,
+    minFileSize: -1,
+    multiple: false,
+    ngfAccept: null, // TODO: Inconsistent naming
+    resetOnClick: true,
+    resetOnModelClick: true,
+    src: '',
+    stopPropagation: false
+  };
 
-    config.headers.__setXHR_ = function () {
-      return function (xhr) {
-        if (!xhr) return;
-        config.__XHR = xhr;
-        if (config.xhrFn) config.xhrFn(xhr);
-        xhr.upload.addEventListener('progress', function (e) {
-          e.config = config;
-          if (deferred.notify) {
-            deferred.notify(e);
-          } else if (promise.progressFunc) {
-            $timeout(function () {
-              promise.progressFunc(e);
-            });
-          }
-        }, false);
-        //fix for firefox not firing upload progress end, also IE8-9
-        xhr.upload.addEventListener('load', function (e) {
-          if (e.lengthComputable) {
+  function UploadService($http, $q, $timeout) {
+    function sendHttp(config) {
+      config.method = config.method || 'POST';
+      config.headers = config.headers || {};
+
+      var deferred = $q.defer();
+      var promise = deferred.promise;
+
+      config.headers.__setXHR_ = function () {
+        return function (xhr) {
+          if (!xhr) return;
+          config.__XHR = xhr;
+          if (config.xhrFn) config.xhrFn(xhr);
+          xhr.upload.addEventListener('progress', function (e) {
             e.config = config;
             if (deferred.notify) {
               deferred.notify(e);
@@ -486,149 +495,184 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                 promise.progressFunc(e);
               });
             }
-          }
-        }, false);
-      };
-    };
-
-    $http(config).then(function (r) {
-      deferred.resolve(r);
-    }, function (e) {
-      deferred.reject(e);
-    }, function (n) {
-      deferred.notify(n);
-    });
-
-    promise.success = function (fn) {
-      promise.then(function (response) {
-        fn(response.data, response.status, response.headers, config);
-      });
-      return promise;
-    };
-
-    promise.error = function (fn) {
-      promise.then(null, function (response) {
-        fn(response.data, response.status, response.headers, config);
-      });
-      return promise;
-    };
-
-    promise.progress = function (fn) {
-      promise.progressFunc = fn;
-      promise.then(null, null, function (update) {
-        fn(update);
-      });
-      return promise;
-    };
-    promise.abort = function () {
-      if (config.__XHR) {
-        $timeout(function () {
-          config.__XHR.abort();
-        });
-      }
-      return promise;
-    };
-    promise.xhr = function (fn) {
-      config.xhrFn = (function (origXhrFn) {
-        return function () {
-          if (origXhrFn) origXhrFn.apply(promise, arguments);
-          fn.apply(promise, arguments);
-        };
-      })(config.xhrFn);
-      return promise;
-    };
-
-    return promise;
-  }
-
-  this.upload = function (config) {
-    function addFieldToFormData(formData, val, key) {
-      if (val !== undefined) {
-        if (angular.isDate(val)) {
-          val = val.toISOString();
-        }
-        if (angular.isString(val)) {
-          formData.append(key, val);
-        } else if (config.sendFieldsAs === 'form') {
-          if (angular.isObject(val)) {
-            for (var k in val) {
-              if (val.hasOwnProperty(k)) {
-                addFieldToFormData(formData, val[k], key + '[' + k + ']');
+          }, false);
+          //fix for firefox not firing upload progress end, also IE8-9
+          xhr.upload.addEventListener('load', function (e) {
+            if (e.lengthComputable) {
+              e.config = config;
+              if (deferred.notify) {
+                deferred.notify(e);
+              } else if (promise.progressFunc) {
+                $timeout(function () {
+                  promise.progressFunc(e);
+                });
               }
             }
-          } else {
-            formData.append(key, val);
-          }
-        } else {
-          val = angular.isString(val) ? val : JSON.stringify(val);
-          if (config.sendFieldsAs === 'json-blob') {
-            formData.append(key, new Blob([val], {type: 'application/json'}));
-          } else {
-            formData.append(key, val);
-          }
+          }, false);
+        };
+      };
+
+      $http(config).then(function (r) {
+        deferred.resolve(r);
+      }, function (e) {
+        deferred.reject(e);
+      }, function (n) {
+        deferred.notify(n);
+      });
+
+      promise.success = function (fn) {
+        promise.then(function (response) {
+          fn(response.data, response.status, response.headers, config);
+        });
+        return promise;
+      };
+
+      promise.error = function (fn) {
+        promise.then(null, function (response) {
+          fn(response.data, response.status, response.headers, config);
+        });
+        return promise;
+      };
+
+      promise.progress = function (fn) {
+        promise.progressFunc = fn;
+        promise.then(null, null, function (update) {
+          fn(update);
+        });
+        return promise;
+      };
+      promise.abort = function () {
+        if (config.__XHR) {
+          $timeout(function () {
+            config.__XHR.abort();
+          });
         }
-      }
+        return promise;
+      };
+      promise.xhr = function (fn) {
+        config.xhrFn = (function (origXhrFn) {
+          return function () {
+            if (origXhrFn) origXhrFn.apply(promise, arguments);
+            fn.apply(promise, arguments);
+          };
+        })(config.xhrFn);
+        return promise;
+      };
+
+      return promise;
     }
 
-    config.headers = config.headers || {};
-    config.headers['Content-Type'] = undefined;
-    config.transformRequest = config.transformRequest ?
-      (angular.isArray(config.transformRequest) ?
-        config.transformRequest : [config.transformRequest]) : [];
-    config.transformRequest.push(function (data) {
-      var formData = new FormData();
-      var allFields = {};
-      var key;
-      for (key in config.fields) {
-        if (config.fields.hasOwnProperty(key)) {
-          allFields[key] = config.fields[key];
-        }
-      }
-      if (data) allFields.data = data;
-      for (key in allFields) {
-        if (allFields.hasOwnProperty(key)) {
-          var val = allFields[key];
-          if (config.formDataAppender) {
-            config.formDataAppender(formData, key, val);
+    function getDefaults() {
+      return angular.copy(defaults);
+    }
+
+    function upload(config) {
+      function addFieldToFormData(formData, val, key) {
+        if (val !== undefined) {
+          if (angular.isDate(val)) {
+            val = val.toISOString();
+          }
+          if (angular.isString(val)) {
+            formData.append(key, val);
+          } else if (config.sendFieldsAs === 'form') {
+            if (angular.isObject(val)) {
+              for (var k in val) {
+                if (val.hasOwnProperty(k)) {
+                  addFieldToFormData(formData, val[k], key + '[' + k + ']');
+                }
+              }
+            } else {
+              formData.append(key, val);
+            }
           } else {
-            addFieldToFormData(formData, val, key);
+            val = angular.isString(val) ? val : JSON.stringify(val);
+            if (config.sendFieldsAs === 'json-blob') {
+              formData.append(key, new Blob([val], {type: 'application/json'}));
+            } else {
+              formData.append(key, val);
+            }
           }
         }
       }
 
-      if (config.file != null) {
-        var fileFormName = config.fileFormDataName || 'file';
-
-        if (angular.isArray(config.file)) {
-          var isFileFormNameString = angular.isString(fileFormName);
-          for (var i = 0; i < config.file.length; i++) {
-            formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i],
-              (config.fileName && config.fileName[i]) || config.file[i].name);
+      config.headers = config.headers || {};
+      config.headers['Content-Type'] = undefined;
+      config.transformRequest = config.transformRequest ?
+        (angular.isArray(config.transformRequest) ?
+          config.transformRequest : [config.transformRequest]) : [];
+      config.transformRequest.push(function (data) {
+        var formData = new FormData();
+        var allFields = {};
+        var key;
+        for (key in config.fields) {
+          if (config.fields.hasOwnProperty(key)) {
+            allFields[key] = config.fields[key];
           }
-        } else {
-          formData.append(fileFormName, config.file, config.fileName || config.file.name);
         }
-      }
-      return formData;
-    });
+        if (data) allFields.data = data;
+        for (key in allFields) {
+          if (allFields.hasOwnProperty(key)) {
+            var val = allFields[key];
+            if (config.formDataAppender) {
+              config.formDataAppender(formData, key, val);
+            } else {
+              addFieldToFormData(formData, val, key);
+            }
+          }
+        }
 
-    return sendHttp(config);
-  };
+        if (config.file != null) {
+          var fileFormName = config.fileFormDataName || 'file';
 
-  this.http = function (config) {
-    config.transformRequest = config.transformRequest || function (data) {
+          if (angular.isArray(config.file)) {
+            var isFileFormNameString = angular.isString(fileFormName);
+            for (var i = 0; i < config.file.length; i++) {
+              formData.append(isFileFormNameString ? fileFormName : fileFormName[i], config.file[i],
+                (config.fileName && config.fileName[i]) || config.file[i].name);
+            }
+          } else {
+            formData.append(fileFormName, config.file, config.fileName || config.file.name);
+          }
+        }
+        return formData;
+      });
+
+      return sendHttp(config);
+    }
+
+    function http(config) {
+      config.transformRequest = config.transformRequest || function (data) {
         if ((window.ArrayBuffer && data instanceof window.ArrayBuffer) || data instanceof Blob) {
           return data;
         }
         return $http.defaults.transformRequest[0](arguments);
       };
-    return sendHttp(config);
-  };
-}
+      return sendHttp(config);
+    }
 
-]);
+    return {
+      upload: upload,
+      http: http,
+      getDefaults: getDefaults
+    };
+  }
+
+  ngFileUpload.provider('Upload', [function() {
+    this.setDefaults = function(userDefaults) {
+      angular.extend(defaults, (userDefaults || {}));
+    };
+
+    this.$get = ['$http', '$q', '$timeout', UploadService];
+  }]);
+})();
 
 (function () {
+    var defaults;
+
+    ngFileUpload.run(['Upload', function(Upload) {
+        defaults = Upload.getDefaults();
+    }]);
+
     ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile',
         function ($parse, $timeout, $compile) {
             return {
@@ -663,7 +707,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
             if (elem.$$ngfRefElem) elem.$$ngfRefElem.remove();
         });
 
-        var disabled = false;
+        var disabled = defaults.disabled;
         if (attr.ngfSelect.search(/\W+$files\W+/) === -1) {
             scope.$watch(attr.ngfSelect, function (val) {
                 disabled = val === false;
@@ -702,9 +746,15 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         }
 
         function bindAttrToFileInput(fileElem) {
+            if (defaults.multiple) fileElem.attr('multiple', defaults.multiple);
             if (attr.ngfMultiple) fileElem.attr('multiple', $parse(attr.ngfMultiple)(scope));
+
+            if (defaults.capture) fileElem.attr('capture', defaults.capture);
             if (attr.ngfCapture) fileElem.attr('capture', $parse(attr.ngfCapture)(scope));
+
+            if (defaults.accept) fileElem.attr('accept', defaults.accept);
             if (attr.accept) fileElem.attr('accept', attr.accept);
+
             for (var i = 0; i < elem[0].attributes.length; i++) {
                 var attribute = elem[0].attributes[i];
                 if ((isInputTypeFile() && attribute.name !== 'type') ||
@@ -750,7 +800,9 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                 evt.preventDefault();
                 evt.stopPropagation();
             }
-            var resetOnClick = $parse(attr.ngfResetOnClick)(scope) !== false;
+
+            var resetOnClick = attr.ngfResetOnClick ? ($parse(attr.ngfResetOnClick)(scope) !== false) : defaults.resetOnClick;
+            var resetOnModelClick = attr.ngfResetModelOnClick ? ($parse(attr.ngfResetModelOnClick)(scope) !== false) : defaults.resetOnModelClick;
             var fileElem = createFileInput(evt, resetOnClick);
 
             function clickAndAssign(evt) {
@@ -764,7 +816,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 
             if (fileElem) {
                 if (!evt || resetOnClick) fileElem.bind('change', changeFn);
-                if (evt && resetOnClick && $parse(attr.ngfResetModelOnClick)(scope) !== false) resetModel(evt);
+                if (evt && resetOnClick && resetOnModelClick) resetModel(evt);
 
                 // fix for android native browser < 4.4
                 if (shouldClickLater(navigator.userAgent)) {
@@ -822,9 +874,11 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
             return result;
         }
 
-        var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt});
-        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || 9007199254740991;
-        var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || -1;
+        var accept = $parse(attr.ngfAccept)(scope, {$file: file, $event: evt}) ||
+            (typeof defaults.ngfAccect === 'function' ? defaults.ngfAccect(file, evt) : defaults.ngfAccect);
+
+        var fileSizeMax = $parse(attr.ngfMaxSize)(scope, {$file: file, $event: evt}) || defaults.maxFielSize;
+        var fileSizeMin = $parse(attr.ngfMinSize)(scope, {$file: file, $event: evt}) || defaults.minFileSize;
         if (accept != null && angular.isString(accept)) {
             var regexp = new RegExp(globStringToRegex(accept), 'gi');
             accept = (file.type != null && regexp.test(file.type.toLowerCase())) ||
@@ -836,11 +890,14 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     ngFileUpload.updateModel = function ($parse, $timeout, scope, ngModel, attr, fileChange,
                                          files, rejFiles, evt, noDelay) {
         function update() {
-            if ($parse(attr.ngfKeep)(scope) === true) {
+            var keep = attr.ngfKeep ? $parse(attr.ngfKeep)(scope) === true : defaults.keep;
+            var keepDistinct = attr.ngfKeepDistinct ? $parse(attr.ngfKeepDistinct)(scope) === true : defaults.keepDistinct;
+
+            if (keep) {
                 var prevFiles = (ngModel.$modelValue || []).slice(0);
                 if (!files || !files.length) {
                     files = prevFiles;
-                } else if ($parse(attr.ngfKeepDistinct)(scope) === true) {
+                } else if (keepDistinct) {
                     var len = prevFiles.length;
                     for (var i = 0; i < files.length; i++) {
                         for (var j = 0; j < len; j++) {
@@ -892,6 +949,12 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
 (function () {
   var validate = ngFileUpload.validate;
   var updateModel = ngFileUpload.updateModel;
+  var defaults;
+
+  ngFileUpload.run(['Upload', function(Upload) {
+    defaults = Upload.getDefaults();
+    console.log(defaults);
+  }]);
 
   ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', function ($parse, $timeout, $location) {
     return {
@@ -935,13 +998,16 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       });
     }
     if (!available) {
-      if ($parse(attr.ngfHideOnDropNotAvailable)(scope) === true) {
+      var hide = attr.ngfHideOnDropNotAvailable ?
+        $parse(attr.ngfHideOnDropNotAvailable)(scope) === true : defaults.hideOnDropNotAvailable;
+
+      if (hide) {
         elem.css('display', 'none');
       }
       return;
     }
 
-    var disabled = false;
+    var disabled = defaults.disabled;
     if (attr.ngfDrop.search(/\W+$files\W+/) === -1) {
       scope.$watch(attr.ngfDrop, function(val) {
         disabled = val === false;
@@ -949,9 +1015,12 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     }
 
     var leaveTimeout = null;
-    var stopPropagation = $parse(attr.ngfStopPropagation);
-    var dragOverDelay = 1;
     var actualDragOverClass;
+    var dragOverDelay = defaults.dragOverDelay;
+    var stopPropagation = function() {
+      return attr.ngfStopPropagation ?
+        $parse(attr.ngfStopPropagation)(scope) : defaults.stopPropagation;
+    };
 
     elem[0].addEventListener('dragover', function (evt) {
       if (elem.attr('disabled') || disabled) return;
@@ -971,25 +1040,29 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
     elem[0].addEventListener('dragenter', function (evt) {
       if (elem.attr('disabled') || disabled) return;
       evt.preventDefault();
-      if (stopPropagation(scope)) evt.stopPropagation();
+      if (stopPropagation()) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function () {
       if (elem.attr('disabled') || disabled) return;
       leaveTimeout = $timeout(function () {
         elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
-      }, dragOverDelay || 1);
+      }, dragOverDelay);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
       if (elem.attr('disabled') || disabled) return;
       evt.preventDefault();
-      if (stopPropagation(scope)) evt.stopPropagation();
+      if (stopPropagation()) evt.stopPropagation();
       elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
+
+      var multiple = attr.multiple || $parse(attr.ngfMultiple)(scope) || defaults.multiple;
+      var allowDir = attr.ngfAllowDir ? $parse(attr.ngfAllowDir)(scope) !== false : defaults.allowDir;
+
       extractFiles(evt, function (files, rejFiles) {
         updateModel($parse, $timeout, scope, ngModel, attr,
           attr.ngfChange || attr.ngfDrop, files, rejFiles, evt);
-      }, $parse(attr.ngfAllowDir)(scope) !== false, attr.multiple || $parse(attr.ngfMultiple)(scope));
+      }, allowDir, multiple);
     }, false);
 
     function calculateDragOverClass(scope, attr, evt) {
@@ -1007,7 +1080,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept) clazz = accepted ? clazz.accept : clazz.reject;
       }
-      return clazz || attr.ngfDragOverClass || 'dragover';
+      return clazz || attr.ngfDragOverClass || defaults.dragOverClass;
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
@@ -1142,7 +1215,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
                 }
               });
             } else {
-              elem.attr('src', attr.ngfDefaultSrc || '');
+              elem.attr('src', attr.ngfDefaultSrc || defaults.src);
             }
           });
         }

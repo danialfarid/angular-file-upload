@@ -1,6 +1,12 @@
 (function () {
   var validate = ngFileUpload.validate;
   var updateModel = ngFileUpload.updateModel;
+  var defaults;
+
+  ngFileUpload.run(['Upload', function(Upload) {
+    defaults = Upload.getDefaults();
+    console.log(defaults);
+  }]);
 
   ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', function ($parse, $timeout, $location) {
     return {
@@ -44,13 +50,16 @@
       });
     }
     if (!available) {
-      if ($parse(attr.ngfHideOnDropNotAvailable)(scope) === true) {
+      var hide = attr.ngfHideOnDropNotAvailable ?
+        $parse(attr.ngfHideOnDropNotAvailable)(scope) === true : defaults.hideOnDropNotAvailable;
+
+      if (hide) {
         elem.css('display', 'none');
       }
       return;
     }
 
-    var disabled = false;
+    var disabled = defaults.disabled;
     if (attr.ngfDrop.search(/\W+$files\W+/) === -1) {
       scope.$watch(attr.ngfDrop, function(val) {
         disabled = val === false;
@@ -58,9 +67,12 @@
     }
 
     var leaveTimeout = null;
-    var stopPropagation = $parse(attr.ngfStopPropagation);
-    var dragOverDelay = 1;
     var actualDragOverClass;
+    var dragOverDelay = defaults.dragOverDelay;
+    var stopPropagation = function() {
+      return attr.ngfStopPropagation ?
+        $parse(attr.ngfStopPropagation)(scope) : defaults.stopPropagation;
+    };
 
     elem[0].addEventListener('dragover', function (evt) {
       if (elem.attr('disabled') || disabled) return;
@@ -80,25 +92,29 @@
     elem[0].addEventListener('dragenter', function (evt) {
       if (elem.attr('disabled') || disabled) return;
       evt.preventDefault();
-      if (stopPropagation(scope)) evt.stopPropagation();
+      if (stopPropagation()) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function () {
       if (elem.attr('disabled') || disabled) return;
       leaveTimeout = $timeout(function () {
         elem.removeClass(actualDragOverClass);
         actualDragOverClass = null;
-      }, dragOverDelay || 1);
+      }, dragOverDelay);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
       if (elem.attr('disabled') || disabled) return;
       evt.preventDefault();
-      if (stopPropagation(scope)) evt.stopPropagation();
+      if (stopPropagation()) evt.stopPropagation();
       elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
+
+      var multiple = attr.multiple || $parse(attr.ngfMultiple)(scope) || defaults.multiple;
+      var allowDir = attr.ngfAllowDir ? $parse(attr.ngfAllowDir)(scope) !== false : defaults.allowDir;
+
       extractFiles(evt, function (files, rejFiles) {
         updateModel($parse, $timeout, scope, ngModel, attr,
           attr.ngfChange || attr.ngfDrop, files, rejFiles, evt);
-      }, $parse(attr.ngfAllowDir)(scope) !== false, attr.multiple || $parse(attr.ngfMultiple)(scope));
+      }, allowDir, multiple);
     }, false);
 
     function calculateDragOverClass(scope, attr, evt) {
@@ -116,7 +132,7 @@
         if (clazz.delay) dragOverDelay = clazz.delay;
         if (clazz.accept) clazz = accepted ? clazz.accept : clazz.reject;
       }
-      return clazz || attr.ngfDragOverClass || 'dragover';
+      return clazz || attr.ngfDragOverClass || defaults.dragOverClass;
     }
 
     function extractFiles(evt, callback, allowDir, multiple) {
@@ -251,7 +267,7 @@
                 }
               });
             } else {
-              elem.attr('src', attr.ngfDefaultSrc || '');
+              elem.attr('src', attr.ngfDefaultSrc || defaults.src);
             }
           });
         }
