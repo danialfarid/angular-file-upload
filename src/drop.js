@@ -259,6 +259,47 @@
     };
   }]);
 
+  ngFileUpload.directive('ngfBgSrc', ['$parse', '$timeout', function ($parse, $timeout) {
+    return {
+      restrict: 'AE',
+      link: function (scope, elem, attr) {
+        if (window.FileReader) {
+          scope.$watch(attr.ngfBgSrc, function (file) {
+            if (file &&
+              ngFileUpload.validate(scope, $parse, attr, file, null) &&
+              (!window.FileAPI || navigator.userAgent.indexOf('MSIE 8') === -1 || file.size < 20000) &&
+              (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
+              $timeout(function () {
+                //prefer URL.createObjectURL for handling refrences to files of all sizes
+                //since it doesn´t build a large string in memory
+                var URL = window.URL || window.webkitURL;
+                if (URL && URL.createObjectURL) {
+                  elem.css({
+                    'background-image': 'url(' + URL.createObjectURL(file) + ')'
+                  });
+                } else {
+                  var fileReader = new FileReader();
+                  fileReader.readAsDataURL(file);
+                  fileReader.onload = function (e) {
+                    $timeout(function () {
+                      elem.css({
+                        'background-image': 'url(' + e.target.result + ')'
+                      });
+                    });
+                  };
+                }
+              });
+            } else {
+              elem.css({
+                'background-image': 'url(' + attr.ngfDefaultSrc + ')' || ''
+              });
+            }
+          });
+        }
+      }
+    };
+  }]);
+
   function dropAvailable() {
     var div = document.createElement('div');
     return ('draggable' in div) && ('ondrop' in div);
