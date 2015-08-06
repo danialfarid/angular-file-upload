@@ -98,6 +98,7 @@ app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
         Upload.upload({
             url: 'upload/url',
             fields: {'username': $scope.username},
+            fileFormDataName : 'fileDataName', //by default the field name is 'file' *Optional
             file: file
         }).progress(function (evt) {
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
