@@ -204,7 +204,7 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       (!window.FileAPI || navigator.userAgent.indexOf('MSIE 9') === -1 || file.size < 4000000)) {
       $timeout(function () {
         //prefer URL.createObjectURL for handling refrences to files of all sizes
-        //since it doesn´t build a large string in memory
+        //since it doesnÂ´t build a large string in memory
         var URL = window.URL || window.webkitURL;
         if (URL && URL.createObjectURL && !disallowObjectUrl) {
           callback(URL.createObjectURL(file));
@@ -889,4 +889,37 @@ ngFileUpload.service('Upload', ['$http', '$q', '$timeout', function ($http, $q, 
       }
     };
   }]);
+
+	/* @namespace attr.ngfClearArq */
+	ngFileUpload.directive('ngfClearArq', ['Upload', '$http', function (Upload, $http) {
+		return {
+			restrict: 'A',
+			link: function (scope, elem, attr) {
+				//vars
+				var _clear =  null;
+
+				//Watch
+				var clearWatch = scope.$watchCollection(function() {
+					    return $http.pendingRequests.length;
+					}, function(newValue, oldValue) {
+
+						//if old and new request value are equal enables cleaning
+						if (oldValue === 0 && newValue === 0) {
+							_clear = true;
+						}else{
+							if (_clear) {
+								//var 
+								var text =  "";
+								//input clear
+								elem.val(text);
+								//stop Watch
+								clearWatch();
+							}
+						}
+
+					});
+			}
+		};
+	}]);
+
 })();
