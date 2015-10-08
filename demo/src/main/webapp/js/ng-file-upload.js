@@ -510,6 +510,10 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
             });
             files = valids;
           }
+          // Hack to avoid resize gif images.
+          if (files[0].type === "image/gif") {
+            delete attr.ngfResize;
+          }
           resize(files, attr, scope, function () {
             $timeout(function () {
               update(files, invalids, newFiles, dupFiles, isSingleModel);
