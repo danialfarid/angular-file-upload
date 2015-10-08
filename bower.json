@@ -1,0 +1,19 @@
+{
+  "name": "ng-file-upload",
+  "main": "index.js",
+  "version": "9.0.7",
+  "homepage": "https://github.com/Qmerce/ng-file-upload",
+  "authors": [
+    "Shushu Inbar <shushu.i@gmail.com>"
+  ],
+  "description": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
