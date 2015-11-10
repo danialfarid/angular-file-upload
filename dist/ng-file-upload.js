@@ -1146,6 +1146,29 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
     }
 
+	function validateAllFiles(name, validatorVal, fn) {
+		if (!files) {
+			return;
+		}
+
+		var dName = 'ngf' + name[0].toUpperCase() + name.substr(1);
+		var i = files.length, valid = null;
+		var val = attrGetter(dName);
+		if (val == null) {
+			valid = valid == null ? true : valid;
+		}else{
+			if (!fn(files, val)) {
+				files.$error = name;
+				files.$errorParam = val;
+				valid = false;
+			}
+		}
+
+		if (valid !== null) {
+			ngModel.$ngfValidations.push({ name: name, valid: valid });
+		}
+	}
+	
     validateSync('pattern', function (cons) {
       return cons.pattern;
     }, upload.validatePattern);
@@ -1166,6 +1189,19 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return r === true || r === null || r === '';
     });
 
+	validateAllFiles('requestMaxSize', function () {
+		return cons.size && cons.size.max;
+	}, function (files, val) {
+		var requestSize = 0;
+		var i = files.length, valid = null;
+
+		while (i--) {
+			requestSize += files[i].size;
+		}
+
+		return requestSize <= val;
+	});
+	
     if (!files.length) {
       return upload.emptyPromise(ngModel, ngModel.$ngfValidations);
     }
