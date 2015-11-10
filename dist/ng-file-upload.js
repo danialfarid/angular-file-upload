@@ -1146,7 +1146,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
     }
 
-	function validateAllFiles(name, validatorVal, fn) {
+	function validateAllFilesSync(name, validatorVal, fn) {
 		if (!files) {
 			return;
 		}
@@ -1189,7 +1189,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return r === true || r === null || r === '';
     });
 
-	validateAllFiles('requestMaxSize', function () {
+	validateAllFilesSync('requestMaxSize', function () {
 		return cons.size && cons.size.max;
 	}, function (files, val) {
 		var requestSize = 0;
