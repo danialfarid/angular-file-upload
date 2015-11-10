@@ -76,7 +76,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     var promises = [upload.emptyPromise()];
     angular.forEach(files, function (f, i) {
       if (f.type.indexOf('image') === 0) {
-        var promise = upload.resize(f, param.width, param.height, param.quality, param.type);
+        var promise = upload.resize(f, param.width, param.height, param.quality, param.type, param.onlyIf);
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);

@@ -194,8 +194,10 @@ At least one of the `ngf-select` or `ngf-drop` are mandatory for the plugin to l
   +ngf-stop-propagation="boolean" // default false, whether to propagate drag/drop events.
   +ngf-hide-on-drop-not-available="boolean" // default false, hides element if file drag&drop is not
   
-  ngf-resize="{width: 100, height: 100, quality: .8}" // resizes the image to the given 
+  ngf-resize="{width: 100, height: 100, quality: .8, onlyIf: '>'}" // resizes the image to the given 
     //width, height and quality (optional between 0.1 and 1.0)
+    //onlyIf allows ability to specify when resizing should occur. '>' if image is greater than supplied
+    //width and height. Or '<' if image is less than supplied width and height.
               
   //validations:
   ngf-pattern="'.pdf,.jpg,video/*,!.jog'" // comma separated wildcard to filter file names and types allowed

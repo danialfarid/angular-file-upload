@@ -18,7 +18,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
   };
 
   // Extracted from https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
-  var resize = function (imagen, width, height, quality, type) {
+  var resize = function (imagen, width, height, quality, type, onlyIf) {
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
@@ -30,6 +30,11 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         }
         if (!height) {
           height = imageElement.height;
+        }
+        if(onlyIf && ((onlyIf == ">" && imageElement.width < width && imageElement.height < height) 
+            || (onlyIf == "<" && imageElement.width > width && imageElement.height > height))) {
+            width = imageElement.width;
+            height = imageElement.height;
         }
         var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height);
         canvasElement.width = dimensions.width;
@@ -77,12 +82,12 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, width, height, quality, type) {
+  upload.resize = function (file, width, height, quality, type, onlyIf) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, type || file.type).then(function (dataUrl) {
+      resize(url, width, height, quality, type || file.type, onlyIf).then(function (dataUrl) {
         deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
       }, function () {
         deferred.reject();
