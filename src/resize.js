@@ -25,10 +25,16 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
     imageElement.onload = function () {
       try {
-        if (!width || (onlyIf && ((onlyIf == ">" && imageElement.width < width && imageElement.height < height)
-            || (onlyIf == "<" && imageElement.width > width && imageElement.height > height)))) {
+        if (!width) {
           width = imageElement.width;
+        }
+        if (!height) {
           height = imageElement.height;
+        }
+        if(onlyIf && ((onlyIf == ">" && imageElement.width < width && imageElement.height < height) 
+            || (onlyIf == "<" && imageElement.width > width && imageElement.height > height))) {
+            width = imageElement.width;
+            height = imageElement.height;
         }
         var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height);
         canvasElement.width = dimensions.width;
@@ -76,12 +82,12 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     });
   }
 
-  upload.resize = function (file, width, height, quality, onlyIf) {
+  upload.resize = function (file, width, height, quality, type, onlyIf) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, file.type).then(function (dataUrl) {
+      resize(url, width, height, quality, type || file.type, onlyIf).then(function (dataUrl) {
         deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
       }, function () {
         deferred.reject();
