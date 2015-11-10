@@ -25,12 +25,8 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
     imageElement.onload = function () {
       try {
-        if (!width) {
-          width = imageElement.width;
-          height = imageElement.height;
-        }
-        if(onlyIf && (onlyIf == ">" && imageElement.width < width && imageElement.height < height)
-            || (onlyIf == "<" && imageElement.width > width && imageElement.height > height)) {
+        if (!width || (onlyIf && ((onlyIf == ">" && imageElement.width < width && imageElement.height < height)
+            || (onlyIf == "<" && imageElement.width > width && imageElement.height > height)))) {
           width = imageElement.width;
           height = imageElement.height;
         }
