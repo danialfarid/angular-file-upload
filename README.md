@@ -106,9 +106,9 @@ Video preview: <video controls ngf-src="file"></video>
 Javascript code:
 ```js
 //inject directives and services.
-var app = angular.module('fileUpload', ['ngFileUpload']);
+var app = angular.module('fileUpload', ['angularFileUpload']);
 
-app.controller('MyCtrl', ['$scope', 'Upload', function ($scope, Upload) {
+app.controller('MyCtrl', ['$scope', 'FileUploader', function ($scope, FileUploader) {
     // upload later on form submit or something similar
     $scope.submit = function() {
       if (form.file.$valid && $scope.file) {
