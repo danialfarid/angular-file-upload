@@ -936,7 +936,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
             files = valids;
           }
           // Hack to avoid resize gif images.
-          if (files[0].type === "image/gif") {
+          if (files && files.length > 0 && files[0].type === "image/gif") {
             delete attr.ngfResize;
           }
 
