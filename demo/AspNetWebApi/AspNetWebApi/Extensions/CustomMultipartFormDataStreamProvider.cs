@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace AngularJSWebApiEmpty.Extensions
+namespace AspNetWebApi.Extensions
 {
   public class CustomMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
   {

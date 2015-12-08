@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AspNetWebApiDemo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AspNetWebApi")]
+[assembly: AssemblyDescription("Demo app for showing how to angular file upload directive with Asp.Net Web Api")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AspNetWebApiDemo")]
+[assembly: AssemblyCompany("Stewart Mbofana")]
+[assembly: AssemblyProduct("AspNetWebApi")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Stewart")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

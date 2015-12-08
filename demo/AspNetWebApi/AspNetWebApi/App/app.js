@@ -2,34 +2,30 @@
 
 /**
  * @ngdoc overview
- * @name toolsApp
+ * @name webApiSample
  * @description
- * # toolsApp
+ * # webApiSample
  *
  * Main module of the application.
  */
 angular
-  .module("toolsApp", [
+  .module("webApiSample", [
     //'ngAnimate',
     //'ngAria',
     //'ngCookies',
     //'ngMessages',
     //'ngResource',
-    //'ngRoute',
+    "ngRoute",
+    "ngFileUpload"
     //'ngSanitize',
     //'ngTouch'
   ])
   .config(function ($routeProvider) {
     $routeProvider
       .when("/", {
-        templateUrl: "views/main.html",
-        controller: "MainCtrl",
-        controllerAs: "main"
-      })
-      .when("/about", {
-        templateUrl: "views/about.html",
-        controller: "AboutCtrl",
-        controllerAs: "about"
+        templateUrl: "app/home/home.html",
+        controller: "HomeCtrl",
+        controllerAs: "home"
       })
       .otherwise({
         redirectTo: "/"

@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace AngularJSWebApiEmpty
+namespace AspNetWebApi
 {
   public class WebApiApplication : System.Web.HttpApplication
   {

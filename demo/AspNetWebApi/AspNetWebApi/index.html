@@ -3,11 +3,11 @@
 <!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]> <html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]> <html class="no-js" lang=""> <!--<![endif]-->
-<html>
+<html ng-app="webApiSample">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Angualr File Upload</title>
+  <title>Angular File Upload</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="Content/bootstrap.min.css">
@@ -26,69 +26,25 @@
 
   <nav class="navbar navbar-default" role="navigation">
 
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Uploads</a>
-      </div>
-      <div id="navbar" class="navbar-collapse collapse">
-      
-      </div><!--/.navbar-collapse -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Uploads</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+
+    </div><!--/.navbar-collapse -->
 
   </nav>
 
-  <div>
-    <div class="row">
-      <div class="col-md-12">
-        <h3>{{vm.title}}</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-9">
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-info active">
-            <div class="row">
-              <div class="col-lg-5 col-md-5 col-sm-11 col-xs-10">name</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">size (kb)</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">created on</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">modified on</div>
-              <div class="col-lg-1 col-md-1 col-sm-1 col-xs-2"></div>
-            </div>
-          </li>
-          <li class="list-group-item" ng-show="vm.photos.length === 0" ng-mouseenter="vm.setPreviewPhoto()">no photos</li>
-          <li ng-repeat="photo in vm.photos" class="list-group-item" ng-mouseenter="vm.setPreviewPhoto(photo)" ng-mouseleave="vm.setPreviewPhoto()">
-            <div class="row">
-              <div class="col-lg-5 col-md-5 col-sm-11 col-xs-10 wraptext">{{photo.name}}</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">{{photo.size}}</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">{{photo.created | date: short}}</div>
-              <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">{{photo.modified | date: short}}</div>
-              <div class="col-lg-1 col-md-1 col-sm-1 col-xs-2">
-                <button type="button" class="btn btn-xs btn-danger" ng-click="vm.remove(photo)">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <!--<eg-photo-uploader></eg-photo-uploader>-->
-      </div>
-      <div class="col-md-3 hidden-sm hidden-xs" style="height: 150px; width: 150px; margin-bottom: 5px;">
-        <img ng-src="album/{{vm.previewPhoto.name}}" style="max-height: 150px" ng-show="vm.previewPhoto" class="img-responsive" alt="vm.previewPhoto.name" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-9">
-        <!--<eg-app-status></eg-app-status>-->
-      </div>
-    </div>
+  <div ng-view>
   </div>
 
   <hr>
-
   <footer>
     <p>&copy; Company 2015</p>
   </footer>
@@ -96,13 +52,20 @@
 
 <script src="Scripts/jquery-2.1.4.js"></script>
 <script src="Scripts/bootstrap.js"></script>
-  <!-- Angular references -->
+<!-- Angular references -->
 <script src="Scripts/angular.js"></script>
+<script src="Scripts/angular-route.js"></script>
 <script src="Scripts/ng-file-upload-shim.js"></script>
-  <script src="Scripts/ng-file-upload.js"></script>
+<script src="Scripts/ng-file-upload.js"></script>
+
+<!-- Spa references -->
+<script src="App/app.js"></script>
+<script src="App/home/home.js"></script>
+<script src="App/services/fileService.js"></script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 <script>
+
   (function(b, o, i, l, e, r) {
     b.GoogleAnalyticsObject = l;
     b[l] || (b[l] =
@@ -115,6 +78,7 @@
   }(window, document, 'script', 'ga'));
   ga('create', 'UA-XXXXX-X', 'auto');
   ga('send', 'pageview');
+
 </script>
 </body>
 </html>
