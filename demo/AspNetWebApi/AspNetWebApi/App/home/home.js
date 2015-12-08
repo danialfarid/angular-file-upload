@@ -10,44 +10,53 @@
    */
   angular.module("webApiSample")
     .controller("HomeCtrl", [
-      "$http", "fileService","Upload", function ($http, fileService,Upload) {
+      "$http", "fileService", "Upload", "API_URL", function ($http, fileService, Upload, API_URL) {
 
         var vm = this;
+
         vm.title = "Photos";
+        ////var apiUrl = "api/files";
 
         vm.photos = [];
-
         vm.files = [];
+        vm.previewPhoto = {};
 
-        var url = "api/files";
+        fileService.getAll()
+          .then(function(data) {
+            vm.photos = data;
+          }, function(err) {
+            console.log("Error status: " + err.status);
+          });
 
-        fileService.getAll().then(function (data) {
-          vm.photos = data;
-        }, function (err) {
-          console.log(err);
-        });
-
-
-        vm.uploadFiles = function (files) {
+        function uploadFiles(files) {
+          debugger;
           console.log(files);
-          //Upload.upload();
+          Upload.upload({
+            url: API_URL,
+            data: { file: files }
+            })
+            .then(function (resp) {
+
+              console.log(resp);
+            }, function(err) {
+              console.log("Error status: " + err.status);
+            });;
         }
 
-        vm.remove = function (filePhoto) {
-
+        function setPreviewPhoto(photo) {
+          vm.previewPhoto = photo;
         }
 
-        vm.setPreviewPhoto = function (filePhoto) {
+        function removePhoto(photo) {
+          console.log(photo);
+          fileService.deletePhoto(photo.Name).then(function() {
+            setPreviewPhoto();
+          });
+        }
 
-        };
-
-        this.awesomeThings = [
-          "HTML5 Boilerplate",
-          "AngularJS",
-          "Karma"
-        ];
-
-
+        vm.uploadFiles = uploadFiles;
+        vm.remove = removePhoto;
+        vm.setPreviewPhoto = setPreviewPhoto;
       }
     ]);
 })();

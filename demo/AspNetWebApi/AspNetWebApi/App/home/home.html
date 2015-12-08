@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-8">
       <ul class="list-group">
         <li class="list-group-item list-group-item-info active">
           <div class="row">
@@ -37,13 +37,12 @@
         <div class="form-group" ng-hide="hasFiles">
           <label for="newPhotos">select and upload new photos</label>
           <input type="file" id="newPhotos" class="uploadFile" accept="image/*" ngf-select ng-model="files" ngf-multiple="true">
-          <!--<div class="button" ngf-select ng-model="files" ngf-multiple="true" id="newPhotos">Select</div>-->
         </div>
 
         <div class="form-group">
-          <ul class="list-inline">
+          <ul class="list-inline" ng-model="vm.files">
             <li><strong>files:</strong></li>
-            <li ng-repeat="photo in photos"> {{photo.name}}</li>
+            <li ng-repeat="photo in files"> {{photo.Name}}</li>
           </ul>
           <input class="btn btn-primary" type="button" ng-click="vm.uploadFiles(files)" value="upload">
           <input class="btn btn-warning" type="reset" value="cancel" />
@@ -54,8 +53,8 @@
       </form>
 
     </div>
-    <div class="col-md-3 hidden-sm hidden-xs" style="height: 150px; width: 150px; margin-bottom: 5px;">
-      <img ng-src="album/{{vm.previewPhoto.name}}" style="max-height: 150px" ng-show="vm.previewPhoto" class="img-responsive" alt="vm.previewPhoto.name" />
+    <div class="col-md-4 hidden-sm hidden-xs" style="height: 250px; width: 250px; margin-bottom: 5px;">
+      <img ng-src="uploads/{{vm.previewPhoto.Name}}" style="max-height: 250px" ng-show="vm.previewPhoto" class="img-responsive" alt="vm.previewPhoto.name" />
     </div>
   </div>
   <div class="row">

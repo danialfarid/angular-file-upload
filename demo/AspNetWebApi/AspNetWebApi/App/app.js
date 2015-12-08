@@ -30,4 +30,5 @@ angular
       .otherwise({
         redirectTo: "/"
       });
-  });
+  })
+  .constant("API_URL", "api/files/");

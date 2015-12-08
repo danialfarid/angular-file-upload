@@ -5,15 +5,15 @@
   angular
     .module("webApiSample")
     .service("fileService", [
-      "$http", "$q", "Upload", function($http, $q, Upload) {
+      "$http", "$q","API_URL", function($http, $q, API_URL) {
 
-        var apiUrl = "api/files/";
+        //var apiUrl = "api/files/";
 
         function getAll() {
-          //debugger;
+
           var deferred = $q.defer();
 
-          $http.get(apiUrl)
+          $http.get(API_URL)
             .success(function(result) {
               deferred.resolve(result);
             })
@@ -28,7 +28,7 @@
 
           var deferred = $q.defer();
 
-          $http.get(apiUrl + fileName)
+          $http.get(API_URL + fileName)
             .success(function(result) {
               deferred.resolve(result);
             })
@@ -39,29 +39,16 @@
           return deferred.promise;
         }
 
-        //function addPhotos(photos) {
-
-        //  var deferred = $q.defer();
-
-        //  $http.post(apiUrl, photos)
-        //    .success(function(result) {
-        //      deferred.resolve(result);
-        //    }).error(function(error) {
-        //      deferred.reject(error);
-        //    });
-
-        //  return deferred.promise;
-        //}
-
         function deletePhoto(fileName) {
 
           var deferred = $q.defer();
 
-          $http.delete(apiUrl + fileName).success(function(result) {
-            deferred.resolve(result);
-          }).error(function(error) {
-            deferred.reject(error);
-          });
+          $http.delete(API_URL, { params: { fileName: fileName } })
+            .success(function(result) {
+              deferred.resolve(result);
+            }).error(function(error) {
+              deferred.reject(error);
+            });
 
           return deferred.promise;
         }
@@ -69,7 +56,6 @@
         return {
           getAll: getAll,
           getPhoto: getPhoto,
-          //addPhotos: addPhotos,
           deletePhoto: deletePhoto
         };
       }

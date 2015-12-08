@@ -1,5 +1,3 @@
-E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\System.Net.Http.Formatting.xml
-E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\System.Web.Http.xml
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\AspNetWebApi.dll.config
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\AspNetWebApi.dll
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\AspNetWebApi.pdb

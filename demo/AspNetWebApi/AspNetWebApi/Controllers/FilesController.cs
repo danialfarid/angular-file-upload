@@ -47,6 +47,7 @@ namespace AspNetWebApi.Controllers
     /// </summary>
     /// <param name="fileName"></param>
     /// <returns></returns>
+    [HttpDelete]
     public async Task<PhotoActionResult> Delete(string fileName)
     {
       try
@@ -72,7 +73,15 @@ namespace AspNetWebApi.Controllers
     {
       var provider = new CustomMultipartFormDataStreamProvider(workingFolder);
 
-      await Request.Content.ReadAsMultipartAsync(provider);
+      try
+      {
+        await Request.Content.ReadAsMultipartAsync(provider);
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
+   
 
       return provider.FileData.Select(file => new FileInfo(file.LocalFileName)).Select(fileInfo => new PhotoViewModel
       {
