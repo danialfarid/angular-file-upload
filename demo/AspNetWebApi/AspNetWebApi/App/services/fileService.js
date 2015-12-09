@@ -2,56 +2,67 @@
 
   "use strict";
 
-  angular
-    .module("webApiSample")
-    .service("fileService", [
-      "$http", "$q","API_URL", function($http, $q, API_URL) {
+        /**
+         *  Service - FileService
+         * 
+         *  Service to do CRUD operations on photos
+         * 
+         */
+        angular
+          .module("webApiSample")
+          .service("fileService", [
+            "$http", "$q", "apiUrl", function($http, $q, apiUrl) {
 
-        //var apiUrl = "api/files/";
-
+        /**
+        *   Method - GetAll
+        * 
+        *   Get all photos saved on the server       
+        */
         function getAll() {
-
           var deferred = $q.defer();
-
-          $http.get(API_URL)
+          $http.get(apiUrl)
             .success(function(result) {
               deferred.resolve(result);
             })
             .error(function(error) {
               deferred.reject(error);
             });
-
           return deferred.promise;
         }
 
+        /**
+        *   Method - GetPhoto
+        * 
+        *   Get photo from server with given file name         * 
+        */
         function getPhoto(fileName) {
-
           var deferred = $q.defer();
-
-          $http.get(API_URL + fileName)
+          $http.get(apiUrl + fileName)
             .success(function(result) {
               deferred.resolve(result);
             })
             .error(function(error) {
               deferred.reject(error);
             });
-
           return deferred.promise;
         }
 
+        /*
+        *   Method - DeletePhoto
+        * 
+        *   Delete photo on the server with given file name         * 
+        */
         function deletePhoto(fileName) {
-
           var deferred = $q.defer();
-
-          $http.delete(API_URL, { params: { fileName: fileName } })
+          $http.delete(apiUrl, { params: { fileName: fileName } })
             .success(function(result) {
               deferred.resolve(result);
             }).error(function(error) {
               deferred.reject(error);
             });
-
           return deferred.promise;
         }
+
 
         return {
           getAll: getAll,

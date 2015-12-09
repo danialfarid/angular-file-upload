@@ -3,3 +3,4 @@ E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\AspNetWebApi.dll
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\bin\AspNetWebApi.pdb
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\obj\Debug\AspNetWebApi.dll
 E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\obj\Debug\AspNetWebApi.pdb
+E:\Github\ng-file-upload\demo\AspNetWebApi\AspNetWebApi\obj\Debug\AspNetWebApi.csprojResolveAssemblyReference.cache

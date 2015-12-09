@@ -76,6 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App\app.js" />
+    <Content Include="App\directives\overlaySpinner.html" />
+    <Content Include="App\directives\overlaySpinner.js" />
     <Content Include="App\home\home.html" />
     <Content Include="App\home\home.js" />
     <Content Include="App\services\fileService.js" />

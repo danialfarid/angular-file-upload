@@ -12,7 +12,11 @@ using AspNetWebApi.Models;
 
 namespace AspNetWebApi.Controllers
 {
-    public class FilesController : ApiController
+  /// <summary>
+  /// This code is from a sample on MSDN  by Jay Chase
+  /// https://code.msdn.microsoft.com/AngularJS-with-Web-API-22f62a6e
+  /// </summary>
+  public class FilesController : ApiController
     {
     private readonly string workingFolder = HttpRuntime.AppDomainAppPath + @"\Uploads";
 
@@ -20,11 +24,11 @@ namespace AspNetWebApi.Controllers
     /// Get all photos
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<PhotoViewModel>> Get()
+    public async Task<IHttpActionResult> Get()
     {
-      List<PhotoViewModel> photos = new List<PhotoViewModel>();
+      var photos = new List<PhotoViewModel>();
 
-      DirectoryInfo photoFolder = new DirectoryInfo(workingFolder);
+      var photoFolder = new DirectoryInfo(workingFolder);
 
       await Task.Factory.StartNew(() =>
       {
@@ -39,8 +43,9 @@ namespace AspNetWebApi.Controllers
                                     })
                                     .ToList();
       });
+    
+      return Ok(new {Photos = photos });
 
-      return photos;
     }
     /// <summary>
     /// Delete photo
@@ -48,48 +53,63 @@ namespace AspNetWebApi.Controllers
     /// <param name="fileName"></param>
     /// <returns></returns>
     [HttpDelete]
-    public async Task<PhotoActionResult> Delete(string fileName)
+    public async Task<IHttpActionResult> Delete(string fileName)
     {
+      if (!FileExists(fileName))
+      {
+        return NotFound();
+      }
+
       try
       {
         var filePath = Directory.GetFiles(workingFolder, fileName)
-                        .FirstOrDefault();
+                 .FirstOrDefault();
 
         await Task.Factory.StartNew(() =>
         { if (filePath != null) File.Delete(filePath); });
 
-        return new PhotoActionResult { Successful = true, Message = fileName + "deleted successfully" };
+        var result = new PhotoActionResult { Successful = true, Message = fileName + "deleted successfully" };
+        return Ok(new { message = result.Message });
       }
       catch (Exception ex)
       {
-        return new PhotoActionResult { Successful = false, Message = "error deleting fileName " + ex.GetBaseException().Message };
+        var result = new PhotoActionResult { Successful = false, Message = "error deleting fileName " + ex.GetBaseException().Message };
+        return BadRequest(result.Message);
       }
     }
+
     /// <summary>
     /// Add a photo
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<PhotoViewModel>> Add()
+    public async Task<IHttpActionResult> Add()
     {
-      var provider = new CustomMultipartFormDataStreamProvider(workingFolder);
-
+      // Check if the request contains multipart/form-data.
+      if (!Request.Content.IsMimeMultipartContent("form-data"))
+      {
+        return BadRequest("Unsupported media type");
+      }
       try
       {
+        var provider = new CustomMultipartFormDataStreamProvider(workingFolder);
+
         await Request.Content.ReadAsMultipartAsync(provider);
+
+        var photos = provider.FileData.Select(file => new FileInfo(file.LocalFileName)).Select(fileInfo => new PhotoViewModel
+        {
+          Name = fileInfo.Name,
+          Created = fileInfo.CreationTime,
+          Modified = fileInfo.LastWriteTime,
+          Size = fileInfo.Length / 1024
+        }).ToList();
+        return Ok(new { Message = "Photos uploaded ok", Photos = photos });
       }
       catch (Exception ex)
       {
-        throw;
+        return BadRequest(ex.GetBaseException().Message);
       }
-   
 
-      return provider.FileData.Select(file => new FileInfo(file.LocalFileName)).Select(fileInfo => new PhotoViewModel
-      {
-        Name = fileInfo.Name,
-        Created = fileInfo.CreationTime,
-        Modified = fileInfo.LastWriteTime,
-        Size = fileInfo.Length / 1024
-      }).ToList();
+
     }
 
     /// <summary>

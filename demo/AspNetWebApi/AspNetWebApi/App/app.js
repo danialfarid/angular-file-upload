@@ -10,7 +10,7 @@
  */
 angular
   .module("webApiSample", [
-    //'ngAnimate',
+    "ngAnimate",
     //'ngAria',
     //'ngCookies',
     //'ngMessages',
@@ -20,7 +20,7 @@ angular
     //'ngSanitize',
     //'ngTouch'
   ])
-  .config(function ($routeProvider) {
+  .config(function($routeProvider) {
     $routeProvider
       .when("/", {
         templateUrl: "app/home/home.html",
@@ -30,5 +30,17 @@ angular
       .otherwise({
         redirectTo: "/"
       });
+  }).run(function($rootScope) {
+
+    $rootScope.spinner = {
+      active: true,
+      on: function() {
+        this.active = true;
+      },
+      off: function() {
+        this.active = false;
+      }
+    };
+
   })
-  .constant("API_URL", "api/files/");
+  .constant("apiUrl", "api/files/");

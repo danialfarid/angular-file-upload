@@ -1,4 +1,5 @@
-(function() {
+(function () {
+
   "use strict";
 
   /**
@@ -10,50 +11,63 @@
    */
   angular.module("webApiSample")
     .controller("HomeCtrl", [
-      "$http", "fileService", "Upload", "API_URL", function ($http, fileService, Upload, API_URL) {
+      "$http", "$rootScope", "fileService", "Upload", "apiUrl", function($http, $rootScope, fileService, Upload, apiUrl) {
 
         var vm = this;
 
+        //Variables
         vm.title = "Photos";
-        ////var apiUrl = "api/files";
-
         vm.photos = [];
         vm.files = [];
         vm.previewPhoto = {};
 
-        fileService.getAll()
-          .then(function(data) {
-            vm.photos = data;
-          }, function(err) {
-            console.log("Error status: " + err.status);
-          });
-
-        function uploadFiles(files) {
-          debugger;
-          console.log(files);
-          Upload.upload({
-            url: API_URL,
-            data: { file: files }
-            })
-            .then(function (resp) {
-
-              console.log(resp);
-            }, function(err) {
-              console.log("Error status: " + err.status);
-            });;
-        }
-
+        //Functions
         function setPreviewPhoto(photo) {
           vm.previewPhoto = photo;
         }
 
-        function removePhoto(photo) {
-          console.log(photo);
-          fileService.deletePhoto(photo.Name).then(function() {
-            setPreviewPhoto();
-          });
+        function activate() {
+          $rootScope.spinner.on();
+          fileService.getAll()
+            .then(function(data) {
+              vm.photos = data.Photos;
+              $rootScope.spinner.off();
+              setPreviewPhoto();
+            }, function(err) {
+              console.log("Error status: " + err.status);
+              $rootScope.spinner.off();
+            });
         }
 
+        function uploadFiles(files) {
+          $rootScope.spinner.on();
+
+          Upload.upload({
+                  url: apiUrl,
+                  data: { file: files }
+            })
+            .then(function(response) {
+                  $rootScope.spinner.off();
+                  activate();
+                  setPreviewPhoto();
+            }, function(err) {
+                  console.log("Error status: " + err.status);
+                  $rootScope.spinner.off();
+            });;
+        }
+
+        function removePhoto(photo) {
+          $rootScope.spinner.on();
+          fileService.deletePhoto(photo.Name)
+            .then(function () {
+              activate();
+              $rootScope.spinner.off();
+              setPreviewPhoto();
+            });
+        }
+
+        //Set scope 
+        activate();
         vm.uploadFiles = uploadFiles;
         vm.remove = removePhoto;
         vm.setPreviewPhoto = setPreviewPhoto;
