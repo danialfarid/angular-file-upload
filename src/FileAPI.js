@@ -278,7 +278,7 @@
 		/**
 		 * FileAPI (core object)
 		 */
-		api = {
+		var api = {
 			version: '2.0.7',
 
 			cors: false,
