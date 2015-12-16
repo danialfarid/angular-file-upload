@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.7
+ * @version 9.0.7-qmerce
  */
 
 (function () {
@@ -427,7 +427,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.7
+ * @version 9.0.7-qmerce
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -448,7 +448,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '9.0.7';
+ngFileUpload.version = '9.0.7-qmerce';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -834,7 +834,11 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     };
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
-      if (f.type.indexOf('image') === 0) {
+
+      // hack to avoid reizing gifs (alex)
+      var isGif = f.type === 'image/gif';
+
+      if (!isGif && f.type.indexOf('image') === 0) {
         upload.resize(f, param.width, param.height, param.quality).then(success(i), error(f));
       } else {
         checkCallback();
@@ -936,9 +940,9 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
             files = valids;
           }
           // Hack to avoid resize gif images.
-          if (files && files.length > 0 && files[0].type === "image/gif") {
-            delete attr.ngfResize;
-          }
+          // if (files && files.length > 0 && files[0].type === "image/gif") {
+          //   delete attr.ngfResize;
+          // }
           resize(files, attr, scope, function () {
             $timeout(function () {
               update(files, invalids, newFiles, dupFiles, isSingleModel);
