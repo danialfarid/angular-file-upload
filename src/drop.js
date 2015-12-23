@@ -1,6 +1,6 @@
 (function () {
   ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', 'ngFileUploadApeConfig',
-    function ($parse, $timeout, $location, Upload, $http) {
+    function ($parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig) {
       return {
         restrict: 'AEC',
         require: '?ngModel',

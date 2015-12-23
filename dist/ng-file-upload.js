@@ -338,7 +338,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
 ]);
 
-ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize', function ($parse, $timeout, $compile, UploadResize) {
+ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize', 'ngFileUploadApeConfig', function ($parse, $timeout, $compile, UploadResize, ngFileUploadApeConfig) {
   var upload = UploadResize;
   upload.getAttrWithDefaults = function (attr, name) {
     if (attr[name] != null) return attr[name];
@@ -410,10 +410,9 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
 
-      // hack to avoid reizing gifs (alex)
-      var isGif = f.type === 'image/gif';
+      var skipResize = ngFileUploadApeConfig.skipGifResizing && f.type === 'image/gif';
 
-      if (!isGif && f.type.indexOf('image') === 0) {
+      if (!skipResize && f.type.indexOf('image') === 0) {
         upload.resize(f, param.width, param.height, param.quality).then(success(i), error(f));
       } else {
         checkCallback();
@@ -514,10 +513,6 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
             });
             files = valids;
           }
-          // Hack to avoid resize gif images.
-          // if (files && files.length > 0 && files[0].type === "image/gif") {
-          //   delete attr.ngfResize;
-          // }
           resize(files, attr, scope, function () {
             $timeout(function () {
               update(files, invalids, newFiles, dupFiles, isSingleModel);
@@ -1458,13 +1453,13 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
 }]);
 
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http',
-    function ($parse, $timeout, $location, Upload, $http) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', 'ngFileUploadApeConfig',
+    function ($parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig);
         }
       };
     }]);
@@ -1489,7 +1484,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, ngFileUploadApeConfig) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -1571,6 +1566,8 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
           url = src;
         });
         if (url) {
+          if (ngFileUploadApeConfig.imageProxyUrl)
+            url = ngFileUploadApeConfig.imageProxyUrl + url;
           $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/jpg';
@@ -1731,5 +1728,30 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     var div = document.createElement('div');
     return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
   }
+
+})();
+
+(function () {
+
+  ngFileUpload.provider('ngFileUploadApeConfig', function(){
+
+    var _skipResizingGif = true;
+    var _imageProxyUrl = 'http://url.apester.com/';
+
+    this.skipGifResizing = function(isSkip){
+      _skipResizingGif = isSkip;
+    };
+    this.imageProxyUrl = function(proxyUrl){
+      _imageProxyUrl = proxyUrl;
+    };
+
+    this.$get = [function(){
+      return {
+        skipGifResizing:  _skipResizingGif,
+        imageProxyUrl:    _imageProxyUrl
+      };
+    }];
+
+  });
 
 })();
