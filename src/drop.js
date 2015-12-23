@@ -1,11 +1,11 @@
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http',
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', 'ngFileUploadApeConfig',
     function ($parse, $timeout, $location, Upload, $http) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig);
         }
       };
     }]);
@@ -30,7 +30,7 @@
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, ngFileUploadApeConfig) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -112,6 +112,8 @@
           url = src;
         });
         if (url) {
+          if (ngFileUploadApeConfig.imageProxyUrl)
+            url = ngFileUploadApeConfig.imageProxyUrl + url;
           $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/jpg';

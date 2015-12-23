@@ -1,4 +1,4 @@
-ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize', function ($parse, $timeout, $compile, UploadResize) {
+ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize', 'ngFileUploadApeConfig', function ($parse, $timeout, $compile, UploadResize, ngFileUploadApeConfig) {
   var upload = UploadResize;
   upload.getAttrWithDefaults = function (attr, name) {
     if (attr[name] != null) return attr[name];
@@ -70,10 +70,9 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
 
-      // hack to avoid reizing gifs (alex)
-      var isGif = f.type === 'image/gif';
+      var skipResize = ngFileUploadApeConfig.skipGifResizing && f.type === 'image/gif';
 
-      if (!isGif && f.type.indexOf('image') === 0) {
+      if (!skipResize && f.type.indexOf('image') === 0) {
         upload.resize(f, param.width, param.height, param.quality).then(success(i), error(f));
       } else {
         checkCallback();
@@ -174,10 +173,6 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', 'UploadResize'
             });
             files = valids;
           }
-          // Hack to avoid resize gif images.
-          // if (files && files.length > 0 && files[0].type === "image/gif") {
-          //   delete attr.ngfResize;
-          // }
           resize(files, attr, scope, function () {
             $timeout(function () {
               update(files, invalids, newFiles, dupFiles, isSingleModel);
