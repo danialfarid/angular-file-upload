@@ -2165,9 +2165,11 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
 
     this.skipGifResizing = function(isSkip){
       _skipResizingGif = isSkip;
+      return this;
     };
     this.imageProxyUrl = function(proxyUrl){
       _imageProxyUrl = proxyUrl;
+      return this;
     };
 
     this.$get = [function(){
