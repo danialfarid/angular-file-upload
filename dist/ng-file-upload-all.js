@@ -2038,13 +2038,13 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 }]);
 
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', '$q',
-    function ($parse, $timeout, $location, Upload, $http, $q) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', '$q', 'ngFileUploadApeConfig',
+    function ($parse, $timeout, $location, Upload, $http, $q, ngFileUploadApeConfig) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, $q);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, $q, ngFileUploadApeConfig);
         }
       };
     }]);
@@ -2069,7 +2069,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, $q) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, $q, ngFileUploadApeConfig) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -2206,6 +2206,8 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       var promises = [], files = [];
       if (urls.length) {
         angular.forEach(urls, function (url) {
+          // apester hack, added proxy to download images from other sites
+          url = ngFileUploadApeConfig.imageProxyUrl ? (ngFileUploadApeConfig.imageProxyUrl + url) : url;
           promises.push($http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/WebP';
@@ -2717,3 +2719,24 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
   return upload;
 }]);
 
+
+(function () {
+
+  ngFileUpload.provider('ngFileUploadApeConfig', function(){
+
+    var _imageProxyUrl = 'http://url.apester.com/';
+
+    this.imageProxyUrl = function(proxyUrl){
+      _imageProxyUrl = proxyUrl;
+      return this;
+    };
+
+    this.$get = [function(){
+      return {
+        imageProxyUrl:    _imageProxyUrl
+      };
+    }];
+
+  });
+
+})();
