@@ -2,7 +2,7 @@
 
   ngFileUpload.service('UploadDataUrl', ['UploadBase', '$timeout', '$q', function (UploadBase, $timeout, $q) {
     var upload = UploadBase;
-    upload.base64DataUrl = function(file) {
+    upload.base64DataUrl = function (file) {
       if (angular.isArray(file)) {
         var d = $q.defer(), count = 0;
         angular.forEach(file, function (f) {
@@ -23,12 +23,9 @@
       }
     };
     upload.dataUrl = function (file, disallowObjectUrl) {
+      if (!file) return upload.emptyPromise(file, file);
       if ((disallowObjectUrl && file.$ngfDataUrl != null) || (!disallowObjectUrl && file.$ngfBlobUrl != null)) {
-        var d = $q.defer();
-        $timeout(function () {
-          d.resolve(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
-        });
-        return d.promise;
+        return upload.emptyPromise(disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl, file);
       }
       var p = disallowObjectUrl ? file.$$ngfDataUrlPromise : file.$$ngfBlobUrlPromise;
       if (p) return p;
@@ -100,9 +97,6 @@
     return /./;
   }
 
-  var style = angular.element('<style>.ngf-hide{display:none !important}</style>');
-  document.getElementsByTagName('head')[0].appendChild(style[0]);
-
   function linkFileDirective(Upload, $timeout, scope, elem, attr, directiveName, resizeParams, isBackground) {
     function constructDataUrl(file) {
       var disallowObjectUrl = Upload.attrGetter('ngfNoObjectUrl', attr, scope);
@@ -115,9 +109,9 @@
             elem.attr('src', src);
           }
           if (src) {
-            elem.removeClass('ngf-hide');
+            elem.removeClass('ng-hide');
           } else {
-            elem.addClass('ngf-hide');
+            elem.addClass('ng-hide');
           }
         });
       });
@@ -132,13 +126,15 @@
           }
           if (size.width === 0 && window.getComputedStyle) {
             var style = getComputedStyle(elem[0]);
-            size = {width: parseInt(style.width.slice(0, -2)),
-              height: parseInt(style.height.slice(0, -2))};
+            size = {
+              width: parseInt(style.width.slice(0, -2)),
+              height: parseInt(style.height.slice(0, -2))
+            };
           }
         }
 
         if (angular.isString(file)) {
-          elem.removeClass('ngf-hide');
+          elem.removeClass('ng-hide');
           if (isBackground) {
             return elem.css('background-image', 'url(\'' + file + '\')');
           } else {
@@ -159,7 +155,7 @@
             constructDataUrl(file);
           }
         } else {
-          elem.addClass('ngf-hide');
+          elem.addClass('ng-hide');
         }
       });
 
@@ -209,25 +205,27 @@
     };
   }]);
 
-  //ngFileUpload.config(['$compileProvider', function ($compileProvider) {
-  //  if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //  if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
-  //}]);
-  //
-  //ngFileUpload.filter('$ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
-  //  return function (file, disallowObjectUrl) {
-  //    if (angular.isString(file)) {
-  //      return $sce.trustAsResourceUrl(file);
-  //    }
-  //    if (file && !file.$ngfDataUrl) {
-  //      if (file.$ngfDataUrl === undefined && angular.isObject(file)) {
-  //        file.$ngfDataUrl = null;
-  //        UploadDataUrl.$ngfDataUrl(file, disallowObjectUrl);
-  //      }
-  //      return '';
-  //    }
-  //    return (file && file.$ngfDataUrl ? $sce.trustAsResourceUrl(file.$ngfDataUrl) : file) || '';
-  //  };
-  //}]);
+  ngFileUpload.config(['$compileProvider', function ($compileProvider) {
+    if ($compileProvider.imgSrcSanitizationWhitelist) $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+    if ($compileProvider.aHrefSanitizationWhitelist) $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|local|file|data|blob):/);
+  }]);
+
+  ngFileUpload.filter('ngfDataUrl', ['UploadDataUrl', '$sce', function (UploadDataUrl, $sce) {
+    return function (file, disallowObjectUrl, trustedUrl) {
+      if (angular.isString(file)) {
+        return $sce.trustAsResourceUrl(file);
+      }
+      var src = file && ((disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl) || file.$ngfDataUrl);
+      if (file && !src) {
+        if (!file.$ngfDataUrlFilterInProgress && angular.isObject(file)) {
+          file.$ngfDataUrlFilterInProgress = true;
+          UploadDataUrl.dataUrl(file, disallowObjectUrl);
+        }
+        return '';
+      }
+      if (file) delete file.$ngfDataUrlFilterInProgress;
+      return (file && src ? (trustedUrl ? $sce.trustAsResourceUrl(src) : src) : file) || '';
+    };
+  }]);
 
 })();

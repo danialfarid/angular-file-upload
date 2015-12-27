@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 9.0.7
+ * @version 11.0.0
  */
 
 (function () {
@@ -294,7 +294,7 @@
       }
 
       if (FileAPI.staticPath == null) FileAPI.staticPath = basePath;
-      script.setAttribute('src', jsUrl || basePath + 'FileAPI.min.js');
+      script.setAttribute('src', jsUrl || basePath + 'FileAPI.js');
       document.getElementsByTagName('head')[0].appendChild(script);
     }
 
@@ -303,8 +303,9 @@
         throw 'Adode Flash Player need to be installed. To check ahead use "FileAPI.hasFlash"';
       }
       var fixInputStyle = function () {
+        var label = fileElem.parent();
         if (elem.attr('disabled')) {
-          if (fileElem) fileElem.removeClass('js-fileapi-wrapper');
+          if (label) label.removeClass('js-fileapi-wrapper');
         } else {
           if (!fileElem.attr('__ngf_flash_')) {
             fileElem.unbind('change');
@@ -315,14 +316,16 @@
             });
             fileElem.attr('__ngf_flash_', 'true');
           }
-          fileElem.addClass('js-fileapi-wrapper');
+          label.addClass('js-fileapi-wrapper');
           if (!isInputTypeFile(elem)) {
-            fileElem.css('position', 'absolute')
+            label.css('position', 'absolute')
               .css('top', getOffset(elem[0]).top + 'px').css('left', getOffset(elem[0]).left + 'px')
               .css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
               .css('filter', 'alpha(opacity=0)').css('display', elem.css('display'))
               .css('overflow', 'hidden').css('z-index', '900000')
               .css('visibility', 'visible');
+            fileElem.css('width', elem[0].offsetWidth + 'px').css('height', elem[0].offsetHeight + 'px')
+              .css('position', 'absolute').css('top', '0px').css('left', '0px');
           }
         }
       };
@@ -407,12 +410,6 @@ if (!window.FileReader) {
         if (_this.onerror) _this.onerror(e);
         _this.dispatchEvent(e);
       }
-    };
-    this.readAsArrayBuffer = function (file) {
-      FileAPI.readAsBinaryString(file, listener);
-    };
-    this.readAsBinaryString = function (file) {
-      FileAPI.readAsBinaryString(file, listener);
     };
     this.readAsDataURL = function (file) {
       FileAPI.readAsDataURL(file, listener);

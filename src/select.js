@@ -45,12 +45,17 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       }
     }
 
+    upload.registerModelChangeValidator(ngModel, attr, scope);
+
     var unwatches = [];
     unwatches.push(scope.$watch(attrGetter('ngfMultiple'), function () {
       fileElem.attr('multiple', attrGetter('ngfMultiple', scope));
     }));
     unwatches.push(scope.$watch(attrGetter('ngfCapture'), function () {
       fileElem.attr('capture', attrGetter('ngfCapture', scope));
+    }));
+    unwatches.push(scope.$watch(attrGetter('ngfAccept'), function () {
+      fileElem.attr('accept', attrGetter('ngfAccept', scope));
     }));
     attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
@@ -62,13 +67,12 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       if (elem !== fileElem) {
         for (var i = 0; i < elem[0].attributes.length; i++) {
           var attribute = elem[0].attributes[i];
-          if (attribute.name !== 'type' && attribute.name !== 'class' &&
-            attribute.name !== 'id' && attribute.name !== 'style') {
+          if (attribute.name !== 'type' && attribute.name !== 'class' && attribute.name !== 'style') {
             if (attribute.value == null || attribute.value === '') {
               if (attribute.name === 'required') attribute.value = 'required';
               if (attribute.name === 'multiple') attribute.value = 'multiple';
             }
-            fileElem.attr(attribute.name, attribute.value);
+            fileElem.attr(attribute.name, attribute.name === 'id' ? 'ngf-' + attribute.value : attribute.value);
           }
         }
       }
@@ -80,13 +84,16 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       }
 
       var fileElem = angular.element('<input type="file">');
+
       bindAttrToFileInput(fileElem);
 
-      fileElem.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
+      var label = angular.element('<label>upload</label>');
+      label.css('visibility', 'hidden').css('position', 'absolute').css('overflow', 'hidden')
         .css('width', '0px').css('height', '0px').css('border', 'none')
         .css('margin', '0px').css('padding', '0px').attr('tabindex', '-1');
-      generatedElems.push({el: elem, ref: fileElem});
-      document.body.appendChild(fileElem[0]);
+      generatedElems.push({el: elem, ref: label});
+
+      document.body.appendChild(label.append(fileElem)[0]);
 
       return fileElem;
     }
@@ -100,6 +107,15 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       if (r != null) return r;
 
       resetModel(evt);
+
+      // fix for md when the element is removed from the DOM and added back #460
+      try {
+        if (!isInputTypeFile() && !document.body.contains(fileElem[0])) {
+          generatedElems.push({el: elem, ref: fileElem.parent()});
+          document.body.appendChild(fileElem[0].parent());
+          fileElem.bind('change', changeFn);
+        }
+      } catch(e){/*ignore*/}
 
       if (isDelayedClickSupported(navigator.userAgent)) {
         setTimeout(function () {
@@ -185,7 +201,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     });
 
     scope.$on('$destroy', function () {
-      if (!isInputTypeFile()) fileElem.remove();
+      if (!isInputTypeFile()) fileElem.parent().remove();
       angular.forEach(unwatches, function (unwatch) {
         unwatch();
       });

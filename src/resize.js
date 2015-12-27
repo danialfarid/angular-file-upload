@@ -1,6 +1,4 @@
-// source: Source: https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
-
-ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', function (UploadValidate, $q, $timeout) {
+ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadValidate, $q) {
   var upload = UploadValidate;
 
   /**
@@ -14,54 +12,72 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
    * @param {Number} maxHeight Nestable area maximum available height
    * @return {Object} { width, height }
    */
-  var calculateAspectRatioFit = function (srcWidth, srcHeight, maxWidth, maxHeight) {
-    var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
-    return {width: srcWidth * ratio, height: srcHeight * ratio};
+  var calculateAspectRatioFit = function (srcWidth, srcHeight, maxWidth, maxHeight, centerCrop) {
+    var ratio = centerCrop ? Math.max(maxWidth / srcWidth, maxHeight / srcHeight) :
+      Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+    return {
+      width: srcWidth * ratio, height: srcHeight * ratio,
+      marginX: srcWidth * ratio - maxWidth, marginY: srcHeight * ratio - maxHeight
+    };
   };
 
-  /**
-   Reduce imagen size and quality.
-   @param {String} imagen is a base64 string
-   @param {Number} width
-   @param {Number} height
-   @param {Number} quality from 0.1 to 1.0
-   @return Promise.<String>
-   **/
-  var resize = function (imagen, width, height, quality, type) {
+  // Extracted from https://github.com/romelgomez/angular-firebase-image-upload/blob/master/app/scripts/fileUpload.js#L89
+  var resize = function (imagen, width, height, quality, type, ratio, centerCrop, resizeIf) {
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
-    var imagenElement = document.createElement('img');
+    var imageElement = document.createElement('img');
 
-    imagenElement.onload = function () {
+    imageElement.onload = function () {
+      if (resizeIf != null && resizeIf(imageElement.width, imageElement.height) === false) {
+        deferred.reject('resizeIf');
+        return;
+      }
       try {
-        if (width === 0) {
-          width = imagenElement.width;
-          height = imagenElement.height;
+        if (ratio) {
+          var ratioFloat = upload.ratioToFloat(ratio);
+          var imgRatio = imageElement.width / imageElement.height;
+          if (imgRatio < ratioFloat) {
+            width = imageElement.width;
+            height = width / ratioFloat;
+          } else {
+            height = imageElement.height;
+            width = height * ratioFloat;
+          }
         }
-        var dimensions = calculateAspectRatioFit(imagenElement.width, imagenElement.height, width, height);
-        canvasElement.width = dimensions.width;
-        canvasElement.height = dimensions.height;
+        if (!width) {
+          width = imageElement.width;
+        }
+        if (!height) {
+          height = imageElement.height;
+        }
+        var dimensions = calculateAspectRatioFit(imageElement.width, imageElement.height, width, height, centerCrop);
+        canvasElement.width = Math.min(dimensions.width, width);
+        canvasElement.height = Math.min(dimensions.height, height);
         var context = canvasElement.getContext('2d');
-        context.drawImage(imagenElement, 0, 0, dimensions.width, dimensions.height);
-        deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 1.0));
+        context.drawImage(imageElement,
+          Math.min(0, -dimensions.marginX / 2), Math.min(0, -dimensions.marginY / 2),
+          dimensions.width, dimensions.height);
+        deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 0.934));
       } catch (e) {
         deferred.reject(e);
       }
     };
-    imagenElement.onerror = function () {
+    imageElement.onerror = function () {
       deferred.reject();
     };
-    imagenElement.src = imagen;
+    imageElement.src = imagen;
     return deferred.promise;
   };
 
-  var dataURLtoBlob = function (dataurl) {
+  upload.dataUrltoBlob = function (dataurl, name) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    return new Blob([u8arr], {type: mime});
+    var blob = new window.Blob([u8arr], {type: mime});
+    blob.name = name;
+    return blob;
   };
 
   upload.isResizeSupported = function () {
@@ -69,23 +85,33 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', '$timeout', functi
     return window.atob && elem.getContext && elem.getContext('2d');
   };
 
-  upload.resize = function (file, width, height, quality) {
-    var deferred = $q.defer();
-    if (file.type.indexOf('image') !== 0) {
-      $timeout(function () {
-        deferred.resolve('Only images are allowed for resizing!');
-      });
-      return deferred.promise;
-    }
+  if (upload.isResizeSupported()) {
+    // add name getter to the blob constructor prototype
+    Object.defineProperty(window.Blob.prototype, 'name', {
+      get: function () {
+        return this.$ngfName;
+      },
+      set: function (v) {
+        this.$ngfName = v;
+      },
+      configurable: true
+    });
+  }
 
+  upload.resize = function (file, width, height, quality, type, ratio, centerCrop, resizeIf) {
+    if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
+
+    var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
-      resize(url, width, height, quality, file.type).then(function (dataUrl) {
-        var blob = dataURLtoBlob(dataUrl);
-        blob.name = file.name;
-        deferred.resolve(blob);
-      }, function () {
-        deferred.reject();
-      });
+      resize(url, width, height, quality, type || file.type, ratio, centerCrop, resizeIf)
+        .then(function (dataUrl) {
+          deferred.resolve(upload.dataUrltoBlob(dataUrl, file.name));
+        }, function (r) {
+          if (r === 'resizeIf') {
+            deferred.resolve(file);
+          }
+          deferred.reject();
+        });
     }, function () {
       deferred.reject();
     });
