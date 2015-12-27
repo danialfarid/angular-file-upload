@@ -1,11 +1,11 @@
 (function () {
-  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', 'ngFileUploadApeConfig',
-    function ($parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig) {
+  ngFileUpload.directive('ngfDrop', ['$parse', '$timeout', '$location', 'Upload', '$http', '$q', 'ngFileUploadApeConfig',
+    function ($parse, $timeout, $location, Upload, $http, $q, ngFileUploadApeConfig) {
       return {
         restrict: 'AEC',
         require: '?ngModel',
         link: function (scope, elem, attr, ngModel) {
-          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, ngFileUploadApeConfig);
+          linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, Upload, $http, $q, ngFileUploadApeConfig);
         }
       };
     }]);
@@ -30,7 +30,7 @@
     };
   }]);
 
-  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, ngFileUploadApeConfig) {
+  function linkDrop(scope, elem, attr, ngModel, $parse, $timeout, $location, upload, $http, $q, ngFileUploadApeConfig) {
     var available = dropAvailable();
 
     var attrGetter = function (name, scope, params) {
@@ -55,6 +55,10 @@
 
     function isDisabled() {
       return elem.attr('disabled') || attrGetter('ngfDropDisabled', scope);
+    }
+
+    if (attrGetter('ngfSelect') == null) {
+      upload.registerModelChangeValidator(ngModel, attr, scope);
     }
 
     var leaveTimeout = null;
@@ -105,24 +109,10 @@
       var html;
       try {
         html = (evt.dataTransfer && evt.dataTransfer.getData && evt.dataTransfer.getData('text/html'));
-      } catch (e) {/* Fix IE11 that throw error calling getData */}
-      if (html) {
-        var url;
-        html.replace(/<img .*src *=\"([^\"]*)\"/, function (m, src) {
-          url = src;
-        });
-        if (url) {
-          if (ngFileUploadApeConfig.imageProxyUrl)
-            url = ngFileUploadApeConfig.imageProxyUrl + url;
-          $http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
-            var arrayBufferView = new Uint8Array(resp.data);
-            var type = resp.headers('content-type') || 'image/jpg';
-            var blob = new Blob([arrayBufferView], {type: type});
-            //var split = type.split('[/;]');
-            //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
-            upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), [blob], evt);
-          });
-        }
+      } catch (e) {/* Fix IE11 that throw error calling getData */
+      }
+      if (upload.shouldUpdateOn('dropUrl', attr, scope) && html) {
+        extractUrlAndUpdateModel(html, evt);
       } else {
         extractFiles(evt, function (files) {
             upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
@@ -131,6 +121,10 @@
       }
     }, false);
     elem[0].addEventListener('paste', function (evt) {
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
+        attrGetter('ngfEnableFirefoxPaste', scope)) {
+        evt.preventDefault();
+      }
       if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
       var files = [];
       var clipboard = evt.clipboardData || evt.originalEvent.clipboardData;
@@ -140,9 +134,55 @@
             files.push(clipboard.items[k].getAsFile());
           }
         }
+      }
+      if (files.length) {
         upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+      } else {
+        var html;
+        try {
+          html = (clipboard && clipboard.getData && clipboard.getData('text/html'));
+        } catch (e) {/* Fix IE11 that throw error calling getData */
+        }
+        if (upload.shouldUpdateOn('pasteUrl', attr, scope) && html) {
+          extractUrlAndUpdateModel(html, evt);
+        }
       }
     }, false);
+
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
+      attrGetter('ngfEnableFirefoxPaste', scope)) {
+      elem.attr('contenteditable', true);
+      elem.on('keypress', function (e) {
+        if (!e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+        }
+      });
+    }
+
+    function extractUrlAndUpdateModel(html, evt) {
+      var urls = [];
+      html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
+        urls.push(src);
+      });
+      var promises = [], files = [];
+      if (urls.length) {
+        angular.forEach(urls, function (url) {
+          // apester hack, added proxy to download images from other sites
+          url = ngFileUploadApeConfig.imageProxyUrl ? (ngFileUploadApeConfig.imageProxyUrl + url) : url;
+          promises.push($http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
+            var arrayBufferView = new Uint8Array(resp.data);
+            var type = resp.headers('content-type') || 'image/WebP';
+            var blob = new window.Blob([arrayBufferView], {type: type});
+            files.push(blob);
+            //var split = type.split('[/;]');
+            //blob.name = url.substring(0, 150).replace(/\W+/g, '') + '.' + (split.length > 1 ? split[1] : 'jpg');
+          }));
+        });
+        $q.all(promises).then(function () {
+          upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        });
+      }
+    }
 
     function calculateDragOverClass(scope, attr, evt, callback) {
       var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}), dClass = 'dragover';
@@ -243,7 +283,10 @@
         var fileList = evt.dataTransfer.files;
         if (fileList != null) {
           for (var j = 0; j < fileList.length; j++) {
-            files.push(fileList.item(j));
+            var file = fileList.item(j);
+            if (file.type || file.size > 0) {
+              files.push(file);
+            }
             if (!multiple && files.length > 0) {
               break;
             }
