@@ -169,6 +169,8 @@
         angular.forEach(urls, function (url) {
           // apester hack, added proxy to download images from other sites
           url = ngFileUploadApeConfig.imageProxyUrl ? (ngFileUploadApeConfig.imageProxyUrl + url) : url;
+          url = ngFileUploadApeConfig.utils.removeHtmlEntities(url);
+
           promises.push($http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/WebP';
