@@ -1,6 +1,6 @@
 {
   "name": "ng-file-upload",
-  "version": "11.0.0qmerce1.0",
+  "version": "11.0.0",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "^0.5.1",

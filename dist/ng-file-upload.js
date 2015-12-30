@@ -1786,6 +1786,8 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         angular.forEach(urls, function (url) {
           // apester hack, added proxy to download images from other sites
           url = ngFileUploadApeConfig.imageProxyUrl ? (ngFileUploadApeConfig.imageProxyUrl + url) : url;
+          url = ngFileUploadApeConfig.utils.removeHtmlEntities(url);
+
           promises.push($http({url: url, method: 'get', responseType: 'arraybuffer'}).then(function (resp) {
             var arrayBufferView = new Uint8Array(resp.data);
             var type = resp.headers('content-type') || 'image/WebP';
@@ -2309,9 +2311,25 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
       return this;
     };
 
+    function _removeHtmlEntities(url){
+      var entities = [
+        { find:'&lt;', replace:'<' },
+        { find:'&gt;', replace:'>' },
+        { find:'&amp;', replace:'&' }
+      ];
+      entities.forEach(function(ent){
+        var reg = new RegExp(ent.find, 'g');
+        url.replace(reg, ent.replace);
+      });
+      return url;
+    }
+
     this.$get = [function(){
       return {
-        imageProxyUrl:    _imageProxyUrl
+        imageProxyUrl:    _imageProxyUrl,
+        utils: {
+          removeHtmlEntities: _removeHtmlEntities
+        }
       };
     }];
 
