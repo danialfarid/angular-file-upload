@@ -17,7 +17,7 @@
       ];
       entities.forEach(function(ent){
         var reg = new RegExp(ent.find, 'g');
-        url.replace(reg, ent.replace);
+        url = url.replace(reg, ent.replace);
       });
       return url;
     }
