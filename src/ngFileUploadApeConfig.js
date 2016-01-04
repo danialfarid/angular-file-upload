@@ -27,11 +27,12 @@
       _errCallbacks.push(cb);
     }
     function _handleError(err){
-      _errCallbacks.forEach(function(cb){
-        if (cb && typeof cb === 'function') cb(err);
-      });
+      var cbList = _errCallbacks.slice(0);
       // emptying the list after every error
       _errCallbacks.splice(0, _errCallbacks.length);
+      cbList.forEach(function(cb){
+        if (cb && typeof cb === 'function') cb(err);
+      });
     }
 
     this.$get = [function(){
