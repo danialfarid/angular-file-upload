@@ -2221,6 +2221,8 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         });
         $q.all(promises).then(function () {
           upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        }, function(err){
+          ngFileUploadApeConfig.utils.handleError(err);
         });
       }
     }
@@ -2746,11 +2748,25 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
       return url;
     }
 
+    var _errCallbacks = [];
+    function _registerErrorCB(cb){
+      _errCallbacks.push(cb);
+    }
+    function _handleError(err){
+      _errCallbacks.forEach(function(cb){
+        if (cb && typeof cb === 'function') cb(err);
+      });
+      // emptying the list after every error
+      _errCallbacks.splice(0, _errCallbacks.length);
+    }
+
     this.$get = [function(){
       return {
         imageProxyUrl:    _imageProxyUrl,
         utils: {
-          removeHtmlEntities: _removeHtmlEntities
+          removeHtmlEntities: _removeHtmlEntities,
+          registerErrorCB: _registerErrorCB,
+          handleError: _handleError
         }
       };
     }];

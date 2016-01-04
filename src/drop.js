@@ -182,6 +182,8 @@
         });
         $q.all(promises).then(function () {
           upload.updateModel(ngModel, attr, scope, attrGetter('ngfChange') || attrGetter('ngfDrop'), files, evt);
+        }, function(err){
+          ngFileUploadApeConfig.utils.handleError(err);
         });
       }
     }
