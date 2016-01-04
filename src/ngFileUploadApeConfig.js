@@ -22,17 +22,13 @@
       return url;
     }
 
-    var _errCallbacks = [];
+    var _errCallback = null;
     function _registerErrorCB(cb){
-      _errCallbacks.push(cb);
+      _errCallback = cb;
     }
     function _handleError(err){
-      var cbList = _errCallbacks.slice(0);
-      // emptying the list after every error
-      _errCallbacks.splice(0, _errCallbacks.length);
-      cbList.forEach(function(cb){
-        if (cb && typeof cb === 'function') cb(err);
-      });
+      if (_errCallback && typeof _errCallback === 'function')
+        _errCallback(err);
     }
 
     this.$get = [function(){
