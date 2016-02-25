@@ -354,7 +354,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
 
 ]);
 
-ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadExif', function ($parse, $timeout, $compile, $q, UploadExif) {
+ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadExif' ,'ngFileUploadApeConfig', function ($parse, $timeout, $compile, $q, UploadExif, ngFileUploadApeConfig) {
   var upload = UploadExif;
   upload.getAttrWithDefaults = function (attr, name) {
     if (attr[name] != null) return attr[name];
@@ -433,11 +433,23 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     angular.forEach(files, function (f, i) {
       if (f.type.indexOf('image') === 0) {
         if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
-        var promise = upload.resize(f, param.width, param.height, param.quality,
-          param.type, param.ratio, param.centerCrop, function(width, height) {
-            return upload.attrGetter('ngfResizeIf', attr, scope,
-              {$width: width, $height: height, $file: f});
-          });
+
+        // Hack to handle gif resizes.
+        var promise;
+        if (ngFileUploadApeConfig.utils.needToResize(f)) {
+
+          promise = upload.resize(f, param.width, param.height, param.quality,
+              param.type, param.ratio, param.centerCrop, function(width, height) {
+                return upload.attrGetter('ngfResizeIf', attr, scope,
+                    {$width: width, $height: height, $file: f});
+              });
+        } else {
+
+          var deffer = $q.defer();
+          deffer.resolve(f);
+          promise = deffer.promise;
+        }
+
         promises.push(promise);
         promise.then(function (resizedFile) {
           files.splice(i, 1, resizedFile);
@@ -513,7 +525,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
 
     var newFiles = files;
     var prevFiles = ngModel && ngModel.$modelValue && (angular.isArray(ngModel.$modelValue) ?
-        ngModel.$modelValue : [ngModel.$modelValue]);
+            ngModel.$modelValue : [ngModel.$modelValue]);
     prevFiles = (prevFiles || attr.$$ngfPrevFiles || []).slice(0);
     var keepResult = handleKeep(files, prevFiles, attr, scope);
     files = keepResult.files;
@@ -2313,6 +2325,19 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
       return this;
     };
 
+    /**
+     * Helps to overcome changing of file type error (gif to png).
+     * @param file
+     * @returns {boolean}
+     * @private
+     */
+    function _needToResize(file) {
+      if (file && file.type === 'image/gif') {
+        return false;
+      }
+      return true;
+    }
+
     function _removeHtmlEntities(url){
       var entities = [
         { find:'&lt;', replace:'<' },
@@ -2341,7 +2366,8 @@ ngFileUpload.service('UploadExif', ['UploadResize', '$q', function (UploadResize
         utils: {
           removeHtmlEntities: _removeHtmlEntities,
           registerErrorCB: _registerErrorCB,
-          handleError: _handleError
+          handleError: _handleError,
+          needToResize: _needToResize
         }
       };
     }];

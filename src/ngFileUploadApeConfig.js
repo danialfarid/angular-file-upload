@@ -19,7 +19,7 @@
       if (file && file.type === 'image/gif') {
         return false;
       }
-      return true
+      return true;
     }
 
     function _removeHtmlEntities(url){

@@ -79,9 +79,10 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         if (param.pattern && !upload.validatePattern(f, param.pattern)) return;
 
         // Hack to handle gif resizes.
+        var promise;
         if (ngFileUploadApeConfig.utils.needToResize(f)) {
 
-          var promise = upload.resize(f, param.width, param.height, param.quality,
+          promise = upload.resize(f, param.width, param.height, param.quality,
               param.type, param.ratio, param.centerCrop, function(width, height) {
                 return upload.attrGetter('ngfResizeIf', attr, scope,
                     {$width: width, $height: height, $file: f});
@@ -90,7 +91,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
 
           var deffer = $q.defer();
           deffer.resolve(f);
-          var promise = deffer.promise;
+          promise = deffer.promise;
         }
 
         promises.push(promise);
