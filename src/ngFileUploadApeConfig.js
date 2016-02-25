@@ -9,6 +9,19 @@
       return this;
     };
 
+    /**
+     * Helps to overcome changing of file type error (gif to png).
+     * @param file
+     * @returns {boolean}
+     * @private
+     */
+    function _needToResize(file) {
+      if (file && file.type === 'image/gif') {
+        return false;
+      }
+      return true
+    }
+
     function _removeHtmlEntities(url){
       var entities = [
         { find:'&lt;', replace:'<' },
@@ -37,7 +50,8 @@
         utils: {
           removeHtmlEntities: _removeHtmlEntities,
           registerErrorCB: _registerErrorCB,
-          handleError: _handleError
+          handleError: _handleError,
+          needToResize: _needToResize
         }
       };
     }];
