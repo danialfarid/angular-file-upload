@@ -577,10 +577,14 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     }
 
     function separateInvalids() {
+      var skipErrors = [ 'maxFiles' ];
+
       valids = [];
       invalids = [];
+
       angular.forEach(allNewFiles, function (file) {
         if (file.$error) {
+          if ( skipErrors.indexOf( file.$error ) !== -1 ) return;
           invalids.push(file);
         } else {
           valids.push(file);
