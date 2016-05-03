@@ -333,8 +333,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
       upload.dataUrl(file).then(function (dataUrl) {
         var img = angular.element('<img>').attr('src', dataUrl)
-          .css('visibility', 'hidden').css('position', 'fixed')
-          .css('max-width', 'none !important').css('max-height', 'none !important');
+          .css('visibility', 'hidden').css('position', 'fixed');
+        img[0].setAttribute('style', 'max-width: none !important; max-height: none !important;');
 
         function success() {
           var width = img[0].clientWidth;
