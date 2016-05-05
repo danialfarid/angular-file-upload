@@ -60,6 +60,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
     });
+    attr.$observe('id', function () {
+      fileElem.attr('id', attrGetter('id'));
+    });
     unwatches.push(function () {
       if (attr.$$observers) delete attr.$$observers.accept;
     });

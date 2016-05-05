@@ -1162,6 +1162,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     attr.$observe('accept', function () {
       fileElem.attr('accept', attrGetter('accept'));
     });
+    attr.$observe('id', function () {
+      fileElem.attr('id', attrGetter('id'));
+    });
     unwatches.push(function () {
       if (attr.$$observers) delete attr.$$observers.accept;
     });
@@ -2399,7 +2402,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
