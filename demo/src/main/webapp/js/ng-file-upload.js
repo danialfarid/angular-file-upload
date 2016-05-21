@@ -2,7 +2,7 @@
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.0.4
+ * @version 12.0.5
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -23,7 +23,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.0.4';
+ngFileUpload.version = '12.0.5';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -267,7 +267,12 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           config._fileKey = config._fileKey || key;
           formData.append(key, file, file.ngfName || file.name);
         } else {
-          if (angular.isObject(val)) {
+          if (angular.isArray(val)) {
+            angular.forEach(val, function (value) {
+              addFieldToFormData(formData, value, key + '[]');
+            })
+          }
+          else if (angular.isObject(val)) {
             if (val.$$ngfCircularDetection) throw 'ngFileUpload: Circular reference in config.data. Make sure specified data for Upload.upload() has no circular reference: ' + key;
 
             val.$$ngfCircularDetection = true;
@@ -284,7 +289,8 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
             } finally {
               delete val.$$ngfCircularDetection;
             }
-          } else {
+          }
+          else {
             formData.append(key, val);
           }
         }
@@ -1977,7 +1983,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
