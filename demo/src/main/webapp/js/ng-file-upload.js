@@ -251,11 +251,13 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     }
 
     function addFieldToFormData(formData, val, key) {
-      if (val !== undefined) {
+      if (val !== undefined && val !== 'undefined' && val !== null && val !== 'null') {
         if (angular.isDate(val)) {
           val = val.toISOString();
         }
-        if (angular.isString(val)) {
+        if (val === true || val === false) {
+          formData.append(key, val ? 1 : 0);
+        } else if (angular.isString(val)) {
           formData.append(key, val);
         } else if (upload.isFile(val)) {
           var file = toResumeFile(val, formData);
@@ -1977,7 +1979,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
