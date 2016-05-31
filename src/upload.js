@@ -255,7 +255,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         if (angular.isDate(val)) {
           val = val.toISOString();
         }
-        if (angular.isString(val)) {
+        if (val === true || val === false) {
+          formData.append(key, val ? 1 : 0);
+        } else if (angular.isString(val)) {
           formData.append(key, val);
         } else if (upload.isFile(val)) {
           var file = toResumeFile(val, formData);
