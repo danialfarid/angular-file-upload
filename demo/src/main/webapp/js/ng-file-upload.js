@@ -1938,25 +1938,29 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     }
 
     function calculateDragOverClass(scope, attr, evt, callback) {
-      var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}), dClass = 'dragover';
+      var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}),
+          dClass = 'dragover',
+          types = ['Files'];
+      if(upload.shouldUpdateOn('dropUrl', attr, scope)){
+        types.push('text/html');
+      }
+      var items = getFileItems(evt, types);
+      if (!items || items.length === 0) {
+        return;
+      }
       if (angular.isString(obj)) {
         dClass = obj;
       } else if (obj) {
         if (obj.delay) dragOverDelay = obj.delay;
         if (obj.accept || obj.reject) {
-          var items = evt.dataTransfer.items;
-          if (items == null || !items.length) {
-            dClass = obj.accept;
-          } else {
-            var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
-            var len = items.length;
-            while (len--) {
-              if (!upload.validatePattern(items[len], pattern)) {
-                dClass = obj.reject;
-                break;
-              } else {
-                dClass = obj.accept;
-              }
+          var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
+          var len = items.length;
+          while (len--) {
+            if (!upload.validatePattern(items[len], pattern)) {
+              dClass = obj.reject;
+              break;
+            } else {
+              dClass = obj.accept;
             }
           }
         }
@@ -1977,7 +1981,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
@@ -2087,6 +2091,17 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
   }
 
+  function getFileItems(evt, types) {
+    var fileItems = [];
+    if (evt.dataTransfer.types && evt.dataTransfer.items) {
+      for (var i = 0; i < evt.dataTransfer.types.length; i++) {
+        if (types.indexOf(evt.dataTransfer.types[i]) > -1) {
+          fileItems.push(evt.dataTransfer.items[i]);
+        }
+      }
+    }
+    return fileItems;
+  }
 })();
 
 // customized version of https://github.com/exif-js/exif-js
