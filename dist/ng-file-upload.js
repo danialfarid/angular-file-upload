@@ -1816,6 +1816,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var stopPropagation = $parse(attrGetter('ngfStopPropagation'));
     var dragOverDelay = 1;
     var actualDragOverClass;
+    var draggingCounter=0;
 
     elem[0].addEventListener('dragover', function (evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
@@ -1838,12 +1839,16 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     }, false);
     elem[0].addEventListener('dragenter', function (evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
+      draggingCounter++;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
     }, false);
     elem[0].addEventListener('dragleave', function (evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
+      draggingCounter--;
+      if(draggingCounter>0)
+        return;
       if (stopPropagation(scope)) evt.stopPropagation();
       leaveTimeout = $timeout(function () {
         if (actualDragOverClass) elem.removeClass(actualDragOverClass);
@@ -1852,6 +1857,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
       }, dragOverDelay || 100);
     }, false);
     elem[0].addEventListener('drop', function (evt) {
+      draggingCounter=0;
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
@@ -1914,7 +1920,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     }
 
     function extractFilesFromHtml(updateOn, html) {
-      if (!upload.shouldUpdateOn(updateOn, attr, scope) || !html) return upload.rejectPromise([]);
+      if (!upload.shouldUpdateOn(updateOn, attr, scope) || typeof html !== 'string' ) return upload.rejectPromise([]);
       var urls = [];
       html.replace(/<(img src|img [^>]* src) *=\"([^\"]*)\"/gi, function (m, n, src) {
         urls.push(src);
@@ -1977,7 +1983,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
