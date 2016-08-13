@@ -1,5 +1,5 @@
 /**!
- * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
+ * AngularJS file upload directives and services. Supports: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
@@ -554,6 +554,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     } else if (config.resumeSize) {
       config.resumeSize().then(function (size) {
         config._start = size;
+        if (config._chunkSize) {
+          config._end = config._start + config._chunkSize;
+        }
         uploadWithAngular();
       }, function (e) {
         throw e;
@@ -728,13 +731,26 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         if (config.file) {
           data.file = config.file;
         }
-        for (key in data) {
-          if (data.hasOwnProperty(key)) {
-            var val = data[key];
+
+        if (angular.isArray(data)) {
+          for (var i = 0; i < data.length; i++) {
+            var name = data[i].name;
+            var value = data[i].value;
             if (config.formDataAppender) {
-              config.formDataAppender(formData, key, val);
+              config.formDataAppender(formData, name, value);
             } else {
-              addFieldToFormData(formData, val, key);
+              addFieldToFormData(formData, value, name);
+            }
+          }
+        } else {
+          for (key in data) {
+            if (data.hasOwnProperty(key)) {
+              var val = data[key];
+              if (config.formDataAppender) {
+                config.formDataAppender(formData, key, val);
+              } else {
+                addFieldToFormData(formData, val, key);
+              }
             }
           }
         }
@@ -1496,7 +1512,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
         if (file && file.type && file.type.search(getTagType(elem[0])) === 0 &&
           (!isBackground || file.type.indexOf('image') === 0)) {
           if (size && Upload.isResizeSupported()) {
-            Upload.resize(file, size.width, size.height, size.quality).then(
+            Upload.resize(file, size.width, size.height, size.quality, size.type, size.ratio, size.centerCrop, size.resizeIf).then(
               function (f) {
                 constructDataUrl(f);
               }, function (e) {
@@ -2399,7 +2415,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
             var promises = [upload.emptyPromise()];
             if (includeDir) {
               var file = {type: 'directory'};
-              file.name = file.path = (path || '') + entry.name + entry.name;
+              file.name = file.path = (path || '') + entry.name;
               files.push(file);
             }
             var dirReader = entry.createReader();
