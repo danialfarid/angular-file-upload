@@ -285,7 +285,8 @@ var upload = Upload.upload({
     {profiles: {[{pic: file1, username: username1}, {pic: file2, username: username2}]} nested array multiple files (html5)
     {file: file, info: Upload.json({id: id, name: name, ...})} send fields as json string
     {file: file, info: Upload.jsonBlob({id: id, name: name, ...})} send fields as json blob, 'application/json' content_type
-    {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name*/
+    {picFile: Upload.rename(file, 'profile.jpg'), title: title} send file with picFile key and profile.jpg file name
+    [{name: 'files', value: files}, {name: 'otherInfo', value: {id: id, person: person,...}] array form to guarantee order*/
   *data: {key: file, otherInfo: uploadInfo},
   /*
   This is to accommodate server implementations expecting nested data object keys in .key or [key] format.

@@ -309,13 +309,26 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
         if (config.file) {
           data.file = config.file;
         }
-        for (key in data) {
-          if (data.hasOwnProperty(key)) {
-            var val = data[key];
+
+        if (angular.isArray(data)) {
+          for (var i = 0; i < data.length; i++) {
+            var name = data[i].name;
+            var value = data[i].value;
             if (config.formDataAppender) {
-              config.formDataAppender(formData, key, val);
+              config.formDataAppender(formData, name, value);
             } else {
-              addFieldToFormData(formData, val, key);
+              addFieldToFormData(formData, value, name);
+            }
+          }
+        } else {
+          for (key in data) {
+            if (data.hasOwnProperty(key)) {
+              var val = data[key];
+              if (config.formDataAppender) {
+                config.formDataAppender(formData, key, val);
+              } else {
+                addFieldToFormData(formData, val, key);
+              }
             }
           }
         }
