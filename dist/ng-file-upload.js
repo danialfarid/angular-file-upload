@@ -1303,7 +1303,6 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
                 file.$error = name;
                 (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
                 file.$errorParam = val;
-                files.splice(i, 1);
                 valid = false;
               }
             }
