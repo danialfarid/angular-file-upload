@@ -136,6 +136,13 @@
         for (var k = 0; k < clipboard.items.length; k++) {
           if (clipboard.items[k].type.indexOf('image') !== -1) {
             files.push(clipboard.items[k].getAsFile());
+			// handle paste from google docs
+          } else if (clipboard.items[k].type.indexOf('html') !== -1) {
+		   clipboard.items[k].getAsString(function(html){
+			extractFilesFromHtml('pasteUrl', html).then(function (files) {
+			  updateModel(files, evt);
+			});				
+		  });
           }
         }
       }
