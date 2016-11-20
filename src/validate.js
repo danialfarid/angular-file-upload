@@ -379,7 +379,11 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     $timeout(function () {
       if (file.type.indexOf('image') !== 0) {
         if(file.type.indexOf('video') === 0){
-          return upload.mediaDuration(file);
+          return upload.mediaDuration(file).then(function(res){
+            deferred.resolve(res);
+          },function(){
+            deferred.reject('video dimension problem');
+          });
         } else {
           deferred.reject('not image');
           return;
