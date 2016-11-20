@@ -463,10 +463,11 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         function success() {
           var duration = el[0].duration;
+	  var width, height;
           file.$ngfDuration = duration;
           if(file.type.indexOf('video')===0){
-            var width = el[0].videoWidth;
-            var height = el[0].videoHeight;
+            width = el[0].videoWidth;
+            height = el[0].videoHeight;
             file.$ngfWidth = width;
             file.$ngfHeight = height;
           }
