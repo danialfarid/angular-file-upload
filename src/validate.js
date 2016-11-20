@@ -282,19 +282,19 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var deffer = $q.defer();
     var promises = [];
 
-    promises.push(validateAsync('maxHeight', 'height.max', /image/,
+    promises.push(validateAsync('maxHeight', 'height.max', /image|video/,
       this.imageDimensions, function (d, val) {
         return d.height <= val;
       }));
-    promises.push(validateAsync('minHeight', 'height.min', /image/,
+    promises.push(validateAsync('minHeight', 'height.min', /image|video/,
       this.imageDimensions, function (d, val) {
         return d.height >= val;
       }));
-    promises.push(validateAsync('maxWidth', 'width.max', /image/,
+    promises.push(validateAsync('maxWidth', 'width.max', /image|video/,
       this.imageDimensions, function (d, val) {
         return d.width <= val;
       }));
-    promises.push(validateAsync('minWidth', 'width.min', /image/,
+    promises.push(validateAsync('minWidth', 'width.min', /image|video/,
       this.imageDimensions, function (d, val) {
         return d.width >= val;
       }));
@@ -304,7 +304,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }, function (r) {
         return r;
       }));
-    promises.push(validateAsync('ratio', null, /image/,
+    promises.push(validateAsync('ratio', null, /image|video/,
       this.imageDimensions, function (d, val) {
         var split = val.toString().split(','), valid = false;
         for (var i = 0; i < split.length; i++) {
@@ -314,21 +314,21 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         }
         return valid;
       }));
-    promises.push(validateAsync('maxRatio', 'ratio.max', /image/,
+    promises.push(validateAsync('maxRatio', 'ratio.max', /image|video/,
       this.imageDimensions, function (d, val) {
         return (d.width / d.height) - upload.ratioToFloat(val) < 0.0001;
       }));
-    promises.push(validateAsync('minRatio', 'ratio.min', /image/,
+    promises.push(validateAsync('minRatio', 'ratio.min', /image|video/,
       this.imageDimensions, function (d, val) {
         return (d.width / d.height) - upload.ratioToFloat(val) > -0.0001;
       }));
     promises.push(validateAsync('maxDuration', 'duration.max', /audio|video/,
       this.mediaDuration, function (d, val) {
-        return d <= upload.translateScalars(val);
+        return d.duration <= upload.translateScalars(val);
       }));
     promises.push(validateAsync('minDuration', 'duration.min', /audio|video/,
       this.mediaDuration, function (d, val) {
-        return d >= upload.translateScalars(val);
+        return d.duration >= upload.translateScalars(val);
       }));
     promises.push(validateAsync('duration', null, /audio|video/,
       function (file, val) {
@@ -378,8 +378,12 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     var deferred = $q.defer();
     $timeout(function () {
       if (file.type.indexOf('image') !== 0) {
-        deferred.reject('not image');
-        return;
+        if(file.type.indexOf('video') === 0){
+          return upload.mediaDuration(file);
+        } else {
+          deferred.reject('not image');
+          return;
+        }
       }
       upload.dataUrl(file).then(function (dataUrl) {
         var img = angular.element('<img>').attr('src', dataUrl)
@@ -437,7 +441,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     if (file.$ngfDuration) {
       var d = $q.defer();
       $timeout(function () {
-        d.resolve(file.$ngfDuration);
+        d.resolve({width: file.$ngfWidth, height: file.$ngfHeight, duration: file.$ngfDuration});
       });
       return d.promise;
     }
@@ -456,8 +460,14 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         function success() {
           var duration = el[0].duration;
           file.$ngfDuration = duration;
+          if(file.type.indexOf('video')===0){
+            var width = el[0].videoWidth,
+            var height = el[0].videoHeight;
+            file.$ngfWidth = width;
+            file.$ngfHeight = height;
+          }
           el.remove();
-          deferred.resolve(duration);
+          deferred.resolve({width: width, height: height, duration: duration});
         }
 
         function error() {
