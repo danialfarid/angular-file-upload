@@ -298,7 +298,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       this.imageDimensions, function (d, val) {
         return d.width >= val;
       }));
-    promises.push(validateAsync('dimensions', null, /image/,
+    promises.push(validateAsync('dimensions', null, /image|video/,
       function (file, val) {
         return upload.emptyPromise(val);
       }, function (r) {
@@ -387,8 +387,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
       upload.dataUrl(file).then(function (dataUrl) {
         var img = angular.element('<img>').attr('src', dataUrl)
-          .css('visibility', 'hidden').css('position', 'fixed')
-          .css('max-width', 'none !important').css('max-height', 'none !important');
+        .css('visibility', 'hidden').css('position', 'fixed')
+        .css('max-width', 'none !important').css('max-height', 'none !important');
 
         function success() {
           var width = img[0].naturalWidth || img[0].clientWidth;
@@ -455,13 +455,13 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
       upload.dataUrl(file).then(function (dataUrl) {
         var el = angular.element(file.type.indexOf('audio') === 0 ? '<audio>' : '<video>')
-          .attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
+        .attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
 
         function success() {
           var duration = el[0].duration;
           file.$ngfDuration = duration;
           if(file.type.indexOf('video')===0){
-            var width = el[0].videoWidth,
+            var width = el[0].videoWidth;
             var height = el[0].videoHeight;
             file.$ngfWidth = width;
             file.$ngfHeight = height;
