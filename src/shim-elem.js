@@ -77,9 +77,9 @@
           if (label) label.removeClass('js-fileapi-wrapper');
         } else {
           if (!fileElem.attr('__ngf_flash_')) {
-            fileElem.unbind('change');
-            fileElem.unbind('click');
-            fileElem.bind('change', function (evt) {
+            fileElem.off('change');
+            fileElem.off('click');
+            fileElem.on('change', function (evt) {
               fileApiChangeFn.apply(this, [evt]);
               changeFn.apply(this, [evt]);
             });
@@ -99,7 +99,7 @@
         }
       };
 
-      elem.bind('mouseenter', fixInputStyle);
+      elem.on('mouseenter', fixInputStyle);
 
       var fileApiChangeFn = function (evt) {
         var files = FileAPI.getFiles(evt);
