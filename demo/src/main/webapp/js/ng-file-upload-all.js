@@ -736,6 +736,9 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
           data.file = config.file;
         }
         for (key in data) {
+          if(key === 'file') {
+            continue;
+          }
           if (data.hasOwnProperty(key)) {
             var val = data[key];
             if (config.formDataAppender) {
@@ -743,6 +746,13 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
             } else {
               addFieldToFormData(formData, val, key);
             }
+          }
+        }
+        if(data.file) {
+          if (config.formDataAppender) {
+            config.formDataAppender(formData, 'file', data.file);
+          } else {
+            addFieldToFormData(formData, data.file, 'file');
           }
         }
 
