@@ -467,14 +467,15 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         el.on('loadedmetadata', success);
         el.on('error', error);
+        
         var count = 0;
-
         function checkLoadError() {
+          count++;
           $timeout(function () {
             if (el[0].parentNode) {
               if (el[0].duration) {
                 success();
-              } else if (count > 10) {
+              } else if (count++ > 10) {
                 error();
               } else {
                 checkLoadError();
