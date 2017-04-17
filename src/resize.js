@@ -61,13 +61,16 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
         context.drawImage(imageElement,
           Math.min(0, -dimensions.marginX / 2), Math.min(0, -dimensions.marginY / 2),
           dimensions.width, dimensions.height);
+        imageElement.src = "";
         deferred.resolve(canvasElement.toDataURL(type || 'image/WebP', quality || 0.934));
       } catch (e) {
         deferred.reject(e);
       }
     };
     imageElement.onerror = function () {
-      imageElement.parentNode.removeChild(imageElement);
+      if (!!imageElement.parentNode) {
+        imageElement.parentNode.removeChild(imageElement);
+      }
       deferred.reject();
     };
     imageElement.src = imagen;
