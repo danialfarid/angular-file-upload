@@ -67,7 +67,7 @@
                 <configuration>
                     <archiveClasses>true</archiveClasses>
                     <webResources>
-                        &lt;!&ndash; in order to interpolate version from pom into appengine-web.xml &ndash;&gt;
+                        <!-- in order to interpolate version from pom into appengine-web.xml -->
                         <resource>
                             <directory>${basedir}/src/main/webapp/WEB-INF</directory>
                             <filtering>true</filtering>
