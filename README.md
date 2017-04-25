@@ -4,6 +4,7 @@
 [![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/issue)](http://issuestats.com/github/danialfarid/ng-file-upload)<br/>
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 [![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?label=donate)](https://gratipay.com/ng-file-upload/)
+[![Support](https://supporter.60devs.com/api/b/dz8c76aw7t6zm4bjbs995fx00/ng-file-upload)](https://supporter.60devs.com/support/dz8c76aw7t6zm4bjbs995fx00/ng-file-upload)
 
 ng-file-upload
 ===================
