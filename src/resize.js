@@ -106,6 +106,7 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
 
   upload.resize = function (file, options) {
     if (file.type.indexOf('image') !== 0) return upload.emptyPromise(file);
+    if ((type || file.type) === 'image/svg+xml') return upload.emptyPromise(file);
 
     var deferred = $q.defer();
     upload.dataUrl(file, true).then(function (url) {
