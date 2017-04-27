@@ -1350,7 +1350,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           if (file) {
             var val = upload.getValidationAttr(attr, scope, name, validationName, file);
             if (val != null) {
-              if (!fn(file, val, i)) {
+              if (typeof file === 'object' && !fn(file, val, i)) {
                 if (ignoredErrors.indexOf(name) === -1) {
                   file.$error = name;
                   (file.$errorMessages = (file.$errorMessages || {}))[name] = true;
