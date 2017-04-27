@@ -178,24 +178,23 @@
 
     function calculateDragOverClass(scope, attr, evt, callback) {
       var obj = attrGetter('ngfDragOverClass', scope, {$event: evt}), dClass = 'dragover';
+      var items = getFileItems(evt);
+      if (!items || items.length === 0) {
+        return;
+      }
       if (angular.isString(obj)) {
         dClass = obj;
       } else if (obj) {
         if (obj.delay) dragOverDelay = obj.delay;
         if (obj.accept || obj.reject) {
-          var items = evt.dataTransfer.items;
-          if (items == null || !items.length) {
-            dClass = obj.accept;
-          } else {
-            var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
-            var len = items.length;
-            while (len--) {
-              if (!upload.validatePattern(items[len], pattern)) {
-                dClass = obj.reject;
-                break;
-              } else {
-                dClass = obj.accept;
-              }
+          var pattern = obj.pattern || attrGetter('ngfPattern', scope, {$event: evt});
+          var len = items.length;
+          while (len--) {
+            if (!upload.validatePattern(items[len], pattern)) {
+              dClass = obj.reject;
+              break;
+            } else {
+              dClass = obj.accept;
             }
           }
         }
@@ -332,4 +331,15 @@
     return ('draggable' in div) && ('ondrop' in div) && !/Edge\/12./i.test(navigator.userAgent);
   }
 
+  function getFileItems(evt) {
+    var fileItems = [];
+    if (evt.dataTransfer.types && evt.dataTransfer.items) {
+      for (var i = 0; i < evt.dataTransfer.types.length; i++) {
+        if (evt.dataTransfer.types[i] === 'Files') {
+          fileItems.push(evt.dataTransfer.items[i]);
+        }
+      }
+    }
+    return fileItems;
+  }
 })();
