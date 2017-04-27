@@ -1,0 +1,11 @@
+{
+    "name": "ng-file-upload",
+    "main": "index.js",
+    "homepage": "https://github.com/danialfarid/ng-file-upload",
+    "keywords": [
+      "angularjs",
+      "ng-file-upload",
+      "file-upload",
+      "javascript"
+    ]
+}
