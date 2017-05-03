@@ -1,0 +1,14 @@
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\AngularJSWebApiEmpty.dll.config
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\AngularJSWebApiEmpty.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\AngularJSWebApiEmpty.pdb
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\Newtonsoft.Json.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Net.Http.Formatting.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Web.Http.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Web.Http.WebHost.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\Newtonsoft.Json.xml
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Net.Http.Formatting.xml
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Web.Http.xml
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\bin\System.Web.Http.WebHost.xml
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\obj\Debug\AspNetWebApiDemo.csprojResolveAssemblyReference.cache
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\obj\Debug\AngularJSWebApiEmpty.dll
+C:\Users\Stewart\Documents\Visual Studio 2015\Projects\AspNetWebApiDemo\AspNetWebApiDemo\obj\Debug\AngularJSWebApiEmpty.pdb
