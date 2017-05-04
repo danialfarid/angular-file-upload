@@ -26,7 +26,11 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
-    imageElement.setAttribute('style', 'visibility:hidden;position:fixed;z-index:-100000');
+    
+    imageElement.style.visibility = 'hidden';
+    imageElement.style.position = 'fixed';
+    imageElement.style.zIndex = '-100000';
+    
     document.body.appendChild(imageElement);
 
     imageElement.onload = function () {
