@@ -1041,8 +1041,8 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         if (validateAfterResize) {
           upload.validate(allNewFiles, keep ? prevValidFiles.length : 0, ngModel, attr, scope)
             .then(function (validationResult) {
-              valids = validationResult.validsFiles;
-              invalids = validationResult.invalidsFiles;
+              valids = validationResult.validFiles;
+              invalids = validationResult.invalidFiles;
               updateModel();
             });
         } else {
@@ -2096,14 +2096,15 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         el.on('loadedmetadata', success);
         el.on('error', error);
+        
         var count = 0;
-
         function checkLoadError() {
+          count++;
           $timeout(function () {
             if (el[0].parentNode) {
               if (el[0].duration) {
                 success();
-              } else if (count > 10) {
+              } else if (count++ > 10) {
                 error();
               } else {
                 checkLoadError();
@@ -2158,7 +2159,11 @@ ngFileUpload.service('UploadResize', ['UploadValidate', '$q', function (UploadVa
     var deferred = $q.defer();
     var canvasElement = document.createElement('canvas');
     var imageElement = document.createElement('img');
-    imageElement.setAttribute('style', 'visibility:hidden;position:fixed;z-index:-100000');
+    
+    imageElement.style.visibility = 'hidden';
+    imageElement.style.position = 'fixed';
+    imageElement.style.zIndex = '-100000';
+    
     document.body.appendChild(imageElement);
 
     imageElement.onload = function () {
