@@ -62,7 +62,7 @@ If you like this plugin give it a thumbs up at [ngmodules](http://ngmodules.org/
 
 ## <a name="usage"></a>Usage
 
-###Samples:
+### Samples
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/1118/](http://jsfiddle.net/danialfarid/maqbzv15/1118/)
 * Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/136/](http://jsfiddle.net/danialfarid/2vq88rfs/136/)
@@ -105,7 +105,7 @@ Image thumbnail: <img ngf-thumbnail="file || '/thumb.jpg'">
 Audio preview: <audio controls ngf-src="file"></audio>
 Video preview: <video controls ngf-src="file"></video>
 ```
-Javascript code:
+### JavaScript Code
 ```js
 //inject directives and services.
 var app = angular.module('fileUpload', ['ngFileUpload']);
