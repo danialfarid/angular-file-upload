@@ -31,7 +31,7 @@ Table of Content:
   * [CORS](#cors)
   * [Amazon S3 Upload](#s3)
 
-##<a name="features"></a> Features
+## <a name="features"></a> Features
 * file upload progress, cancel/abort
 * file drag and drop (html5 only)
 * image paste from clipboard and drag and drop from browser pages (html5 only).
@@ -46,7 +46,7 @@ Table of Content:
 * HTML5 FileReader.readAsDataURL shim for IE8-9
 * available on [npm](https://www.npmjs.com/package/ng-file-upload), [bower](https://libraries.io/bower/ng-file-upload), [meteor](https://atmospherejs.com/danialf/ng-file-upload), [nuget](https://www.nuget.org/packages/angular-file-upload)
 
-##<a name="install"></a> Install
+## <a name="install"></a> Install
 
 * <a name="manual"></a>**Manual**: download latest from [here](https://github.com/danialfarid/ng-file-upload-bower/releases/latest)
 * <a name="bower"></a>**Bower**:
@@ -60,9 +60,9 @@ Table of Content:
 <script src="ng-file-upload(.min).js"></script>
 ```
 
-##<a name="usage"></a> Usage
+## <a name="usage"></a> Usage
 
-###Samples:
+### Samples:
 * Upload with form submit and validations: [http://jsfiddle.net/danialfarid/maqbzv15/1118/](http://jsfiddle.net/danialfarid/maqbzv15/1118/)
 * Upload multiple files one by one on file select:
 [http://jsfiddle.net/danialfarid/2vq88rfs/136/](http://jsfiddle.net/danialfarid/2vq88rfs/136/)
