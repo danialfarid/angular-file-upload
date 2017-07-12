@@ -38,5 +38,6 @@
   "bugs": {
     "url": "https://github.com/danialfarid/ng-file-upload/issues"
   },
-  "homepage": "https://github.com/danialfarid/ng-file-upload"
+  "homepage": "https://github.com/danialfarid/ng-file-upload",
+  "main": "dist/ng-file-upload.js"
 }
