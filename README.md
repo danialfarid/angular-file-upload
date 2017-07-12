@@ -25,7 +25,7 @@ Table of Content:
 * [Features](#features)
 * [Install](#install) ([Manual](#manual), [Bower](#bower), [NuGet](#nuget), [NPM](#npm))
 * [Usage](#usage)
-* [Old Browsers](#old_browsers)
+* [Old Browsers](#old-browsers)
 * [Server Side](#server)
   * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
   * [CORS](#cors)
