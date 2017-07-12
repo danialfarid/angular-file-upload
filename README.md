@@ -26,8 +26,8 @@ Table of Content:
 * [Install](#install) ([Manual](#manual), [Bower](#bower), [NuGet](#nuget), [NPM](#npm))
 * [Usage](#usage)
 * [Old Browsers](#old-browsers)
-* [Server Side](#server)
-  * [Samples](#server) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
+* [Server Side](#serve-side)
+  * [Samples](#serve-side) ([Java](#java), [Spring](#spring), [Node.js](#node), [Rails](#rails), [PHP](#php), [.Net](#net))
   * [CORS](#cors)
   * [Amazon S3 Upload](#s3)
 
