@@ -459,7 +459,7 @@ On your server you need to keep track of what files are being uploaded and how m
 
 
 
-##<a name="old_browsers"></a> Old browsers
+## Old browsers
 
 For browsers not supporting HTML5 FormData (IE8, IE9, ...) [FileAPI](https://github.com/mailru/FileAPI) module is used.
 **Note**: You need Flash installed on your browser since `FileAPI` uses Flash to upload files.
@@ -491,7 +491,7 @@ You can place these two files beside `angular-file-upload-shim(.min).js` on your
 * In case of an error response (http code >= 400) the custom error message returned from the server may not be available. For some error codes flash just provide a generic error message and ignores the response text. [#310](https://github.com/danialfarid/ng-file-upload/issues/310)
 * Older browsers won't allow `PUT` requests. [#261](https://github.com/danialfarid/ng-file-upload/issues/261)
 
-##<a name="server"></a>Server Side
+## Server Side
 
 * <a name="java"></a>**Java**
 You can find the sample server code in Java/GAE [here](https://github.com/danialfarid/ng-file-upload/blob/master/demo/src/main/java/com/df/angularfileupload/)
