@@ -1,4 +1,4 @@
-ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload', function ($parse, $timeout, $compile, Upload) {
+ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', '$interpolate', 'Upload', function ($parse, $timeout, $compile, $interpolate, Upload) {
   var generatedElems = [];
 
   function isDelayedClickSupported(ua) {
@@ -13,7 +13,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     return ua.indexOf('Chrome') === -1 && /.*Windows.*Safari.*/.test(ua);
   }
 
-  function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, upload) {
+  function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, $interpolate, upload) {
     /** @namespace attr.ngfSelect */
     /** @namespace attr.ngfChange */
     /** @namespace attr.ngModel */
@@ -70,8 +70,9 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     }));
     function bindAttrToFileInput(fileElem, label) {
       function updateId(val) {
-        fileElem.attr('id', 'ngf-' + val);
-        label.attr('id', 'ngf-label-' + val);
+        var interpolatedVal = $interpolate(val);
+        fileElem.attr('id', 'ngf-' + interpolatedVal);
+        label.attr('id', 'ngf-label-' + interpolatedVal);
       }
 
       for (var i = 0; i < elem[0].attributes.length; i++) {
@@ -248,7 +249,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
     restrict: 'AEC',
     require: '?ngModel',
     link: function (scope, elem, attr, ngModel) {
-      linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, Upload);
+      linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, $interpolate, Upload);
     }
   };
 }]);
