@@ -94,9 +94,9 @@
       });
 
       if (disallowObjectUrl) {
-        p = file.$$ngfDataUrlPromise = deferred.promise;
+        p = file.$$ngfDataUrlPromise = deferred.promise.catch(angular.noop);
       } else {
-        p = file.$$ngfBlobUrlPromise = deferred.promise;
+        p = file.$$ngfBlobUrlPromise = deferred.promise.catch(angular.noop);
       }
       p['finally'](function () {
         delete file[disallowObjectUrl ? '$$ngfDataUrlPromise' : '$$ngfBlobUrlPromise'];
