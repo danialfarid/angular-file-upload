@@ -1,19 +1,19 @@
 {
   "name": "ng-file-upload",
-  "version": "12.2.13",
+  "version": "12.2.14",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-concat": "^0.5.1",
+    "grunt": "^1.0.3",
     "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-jshint": "^0.11.0",
-    "grunt-contrib-uglify": "^0.8.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-text-replace": "~0.3.12",
-    "grunt-git": "~0.2.14",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^2.0.0",
+    "grunt-contrib-uglify": "^4.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-git": "^1.0.10",
     "grunt-serve": "^0.1.6",
-    "jshint-stylish": "^1.0.0",
-    "load-grunt-tasks": "^3.1.0"
+    "grunt-text-replace": "^0.4.0",
+    "jshint-stylish": "^2.2.1",
+    "load-grunt-tasks": "^4.0.0"
   },
   "description": "An AngularJS directive for file upload using HTML5 with FileAPI polyfill for unsupported browsers",
   "files": [
@@ -21,6 +21,7 @@
     "dist"
   ],
   "scripts": {
+    "build": "node_modules/grunt/bin/grunt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
