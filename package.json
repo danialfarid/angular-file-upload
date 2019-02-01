@@ -1,6 +1,6 @@
 {
   "name": "ng-file-upload",
-  "version": "12.2.14",
+  "version": "12.2.15",
   "devDependencies": {
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "^0.6.0",
