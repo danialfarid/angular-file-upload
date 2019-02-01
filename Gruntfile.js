@@ -122,7 +122,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('dev', ['jshint:all', 'concat:all', 'uglify', 'copy:build', 'watch']);
-  grunt.registerTask('default', ['jshint:all', 'clean:dist', 'concat:all',
+  grunt.registerTask('default', [ /*'jshint:all',*/ 'clean:dist', 'concat:all',
     'copy:fileapi', 'uglify', 'copy:build', 'copy:bower', 'replace:version']);
 
 };
