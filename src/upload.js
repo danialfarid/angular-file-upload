@@ -168,7 +168,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       promise.progressFunc = fn;
       promise.then(null, null, function (n) {
         fn(n);
-      });
+      }).catch(angular.noop);
       return promise;
     };
     promise.abort = promise.pause = function () {
