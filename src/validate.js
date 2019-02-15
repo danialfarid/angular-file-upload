@@ -1,3 +1,5 @@
+const fileType = require('file-type');
+
 ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', function (UploadDataUrl, $q, $timeout) {
   var upload = UploadDataUrl;
 
@@ -113,7 +115,35 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     return val;
   };
 
-  upload.validate = function (files, prevLength, ngModel, attr, scope) {
+  // Reference:
+  // https://github.com/sindresorhus/file-type
+  function _validateFileType(acceptPattern, file) {
+    if (!acceptPattern) {
+      return true;
+    }
+
+    return new Promise(function (resolve) {
+      var filereader = new FileReader();
+
+      filereader.onloadend = function(evt) {
+        if (evt.target.readyState === FileReader.DONE) {
+          const type = fileType(new Uint8Array(evt.target.result));
+
+          const fakeFile = {
+            name: file.name,
+            type: type.mime,
+          };
+
+          var isValid = upload.validatePattern(fakeFile, acceptPattern);
+          resolve(isValid);
+        }
+      }
+      var blob = file.slice(0, 4);
+      filereader.readAsArrayBuffer(blob);
+    });
+  }
+
+  upload.validate = async function (files, prevLength, ngModel, attr, scope) {
     ngModel = ngModel || {};
     ngModel.$ngfValidations = ngModel.$ngfValidations || [];
 
@@ -135,12 +165,23 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     files = files.length === undefined ? [files] : files.slice(0);
     var invalidFiles = [];
 
-    function validateSync(name, validationName, fn) {
+    async function validateSync(name, validationName, fn) {
       if (files) {
+        const acceptPattern = attr.accept || null;
+
         var i = files.length, valid = null;
         while (i--) {
           var file = files[i];
           if (file) {
+
+            const isValidFileType = await _validateFileType(acceptPattern, file);
+            if (!isValidFileType) {
+              invalidFiles.push(file);
+              files.splice(i, 1);
+              ngModel.$ngfValidations.push({name: name, valid: false});
+              return;
+            }
+
             var val = upload.getValidationAttr(attr, scope, name, validationName, file);
             if (val != null) {
               if (!fn(file, val, i)) {
@@ -168,15 +209,15 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
     }
 
-    validateSync('pattern', null, upload.validatePattern);
-    validateSync('minSize', 'size.min', function (file, val) {
+    await validateSync('pattern', null, upload.validatePattern);
+    await validateSync('minSize', 'size.min', function (file, val) {
       return file.size + 0.1 >= upload.translateScalars(val);
     });
-    validateSync('maxSize', 'size.max', function (file, val) {
+    await validateSync('maxSize', 'size.max', function (file, val) {
       return file.size - 0.1 <= upload.translateScalars(val);
     });
     var totalSize = 0;
-    validateSync('maxTotalSize', null, function (file, val) {
+    await validateSync('maxTotalSize', null, function (file, val) {
       totalSize += file.size;
       if (totalSize > upload.translateScalars(val)) {
         files.splice(0, files.length);
@@ -185,7 +226,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return true;
     });
 
-    validateSync('validateFn', null, function (file, r) {
+    await validateSync('validateFn', null, function (file, r) {
       return r === true || r === null || r === '';
     });
 
@@ -467,7 +508,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         el.on('loadedmetadata', success);
         el.on('error', error);
-        
+
         var count = 0;
         function checkLoadError() {
           count++;

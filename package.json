@@ -1,7 +1,7 @@
 {
   "name": "@reedsy/ng-file-upload",
   "private": true,
-  "version": "12.2.18",
+  "version": "12.3.0",
   "devDependencies": {
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "^0.6.0",
@@ -40,5 +40,8 @@
   "bugs": {
     "url": "https://github.com/danialfarid/ng-file-upload/issues"
   },
-  "homepage": "https://github.com/danialfarid/ng-file-upload"
+  "homepage": "https://github.com/danialfarid/ng-file-upload",
+  "dependencies": {
+    "file-type": "^10.7.1"
+  }
 }
