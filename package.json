@@ -22,7 +22,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "node_modules/grunt/bin/grunt",
+    "build": "node_modules/grunt/bin/grunt --force",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

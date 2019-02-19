@@ -1767,7 +1767,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
           resolve(isValid);
         }
       }
-      var blob = file.slice(0, 4);
+      var blob = file.slice(0, fileType.minimumBytes);
       filereader.readAsArrayBuffer(blob);
     });
   }
