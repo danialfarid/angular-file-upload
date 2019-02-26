@@ -3,7 +3,7 @@
  * progress, resize, thumbnail, preview, validation and CORS
  * FileAPI Flash shim for old browsers not supporting FormData
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.3.0
+ * @version 12.3.1
  */
 
 (function () {
@@ -424,7 +424,7 @@ if (!window.FileReader) {
  * AngularJS file upload directives and services. Supoorts: file upload/drop/paste, resume, cancel/abort,
  * progress, resize, thumbnail, preview, validation and CORS
  * @author  Danial  <danial.farid@gmail.com>
- * @version 12.3.0
+ * @version 12.3.1
  */
 
 if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
@@ -445,7 +445,7 @@ if (window.XMLHttpRequest && !(window.FileAPI && FileAPI.shouldLoad)) {
 
 var ngFileUpload = angular.module('ngFileUpload', []);
 
-ngFileUpload.version = '12.3.0';
+ngFileUpload.version = '12.3.1';
 
 ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, $q, $timeout) {
   var upload = this;
@@ -1627,7 +1627,7 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
 
 })();
 
-const fileType = require('file-type');
+var fileType = require('file-type');
 
 ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', function (UploadDataUrl, $q, $timeout) {
   var upload = UploadDataUrl;
@@ -1751,25 +1751,26 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       return true;
     }
 
-    return new Promise(function (resolve) {
-      var filereader = new FileReader();
+    var d = $q.defer();
+    var filereader = new FileReader();
 
-      filereader.onloadend = function(evt) {
-        if (evt.target.readyState === FileReader.DONE) {
-          const type = fileType(new Uint8Array(evt.target.result));
+    filereader.onloadend = function(evt) {
+      if (evt.target.readyState === FileReader.DONE) {
+        var type = fileType(new Uint8Array(evt.target.result));
 
-          const fakeFile = {
-            name: file.name,
-            type: type.mime,
-          };
+        var fakeFile = {
+          name: file.name,
+          type: type.mime,
+        };
 
-          var isValid = upload.validatePattern(fakeFile, acceptPattern);
-          resolve(isValid);
-        }
+        var isValid = upload.validatePattern(fakeFile, acceptPattern);
+        d.resolve(isValid);
       }
-      var blob = file.slice(0, fileType.minimumBytes);
-      filereader.readAsArrayBuffer(blob);
-    });
+    }
+    var blob = file.slice(0, fileType.minimumBytes);
+    filereader.readAsArrayBuffer(blob);
+
+    return d.promise;
   }
 
   upload.validate = async function (files, prevLength, ngModel, attr, scope) {
@@ -1796,14 +1797,14 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
     async function validateSync(name, validationName, fn) {
       if (files) {
-        const acceptPattern = attr.accept || null;
+        var acceptPattern = attr.accept || null;
 
         var i = files.length, valid = null;
         while (i--) {
           var file = files[i];
           if (file) {
 
-            const isValidFileType = await _validateFileType(acceptPattern, file);
+            var isValidFileType = await _validateFileType(acceptPattern, file);
             if (!isValidFileType) {
               invalidFiles.push(file);
               files.splice(i, 1);
