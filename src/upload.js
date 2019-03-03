@@ -193,7 +193,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     if (promise['finally'] && promise['finally'] instanceof Function) {
       promise['finally'](function () {
         upload.promisesCount--;
-      });
+      }).catch(angular.noop);
     }
     return promise;
   }
