@@ -8,7 +8,7 @@
 ng-file-upload
 ===================
 
-Lightweight Angular directive to upload files.
+Lightweight AngularJS directive to upload files.
 
 **See the <a href="https://angular-file-upload.appspot.com/" target="_blank">DEMO</a> page.** Reference docs [here](https://github.com/danialfarid/ng-file-upload/blob/master/README.md#full-reference)
 
