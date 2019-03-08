@@ -66,7 +66,25 @@
     var dragOverDelay = 1;
     var actualDragOverClass;
 
-    elem[0].addEventListener('dragover', function (evt) {
+    scope.$on('$destroy', function () {
+      elem[0].removeEventListener('dragover', onDragOver, false);
+      elem[0].removeEventListener('dragenter', onDragEnter, false);
+      elem[0].removeEventListener('dragleave', onDragLeave, false);
+      elem[0].removeEventListener('drop', onDrop, false);
+      elem[0].removeEventListener('paste', onPaste, false);
+
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && attrGetter('ngfEnableFirefoxPaste', scope)) {
+        elem.off('keypress', onKeyPress);
+      }
+    });
+
+    elem[0].addEventListener('dragover', onDragOver, false);
+    elem[0].addEventListener('dragenter', onDragEnter, false);
+    elem[0].addEventListener('dragleave',onDragLeave, false);
+    elem[0].addEventListener('drop', onDrop, false);
+    elem[0].addEventListener('paste', onPaste, false);
+
+    function onDragOver(evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
@@ -84,13 +102,15 @@
           attrGetter('ngfDrag', scope, {$isDragging: true, $class: actualDragOverClass, $event: evt});
         });
       }
-    }, false);
-    elem[0].addEventListener('dragenter', function (evt) {
+    }
+
+    function onDragEnter(evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
-    }, false);
-    elem[0].addEventListener('dragleave', function (evt) {
+    }
+
+    function onDragLeave(evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
@@ -99,32 +119,36 @@
         actualDragOverClass = null;
         attrGetter('ngfDrag', scope, {$isDragging: false, $event: evt});
       }, dragOverDelay || 100);
-    }, false);
-    elem[0].addEventListener('drop', function (evt) {
+    }
+
+    function onDrop(evt) {
       if (isDisabled() || !upload.shouldUpdateOn('drop', attr, scope)) return;
       evt.preventDefault();
       if (stopPropagation(scope)) evt.stopPropagation();
       if (actualDragOverClass) elem.removeClass(actualDragOverClass);
       actualDragOverClass = null;
       extractFilesAndUpdateModel(evt.dataTransfer, evt, 'dropUrl');
-    }, false);
-    elem[0].addEventListener('paste', function (evt) {
+    }
+
+    function onPaste(evt) {
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
         attrGetter('ngfEnableFirefoxPaste', scope)) {
         evt.preventDefault();
       }
       if (isDisabled() || !upload.shouldUpdateOn('paste', attr, scope)) return;
       extractFilesAndUpdateModel(evt.clipboardData || evt.originalEvent.clipboardData, evt, 'pasteUrl');
-    }, false);
+    }
+
+    function onKeyPress(e) {
+      if (!e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+      }
+    }
 
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 &&
       attrGetter('ngfEnableFirefoxPaste', scope)) {
       elem.attr('contenteditable', true);
-      elem.on('keypress', function (e) {
-        if (!e.metaKey && !e.ctrlKey) {
-          e.preventDefault();
-        }
-      });
+      elem.on('keypress', onKeyPress);
     }
 
     function extractFilesAndUpdateModel(source, evt, updateOnType) {
