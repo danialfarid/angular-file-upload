@@ -155,7 +155,11 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
       var invalidModel = upload.attrGetter('ngfModelInvalid', attr);
       if (invalidModel) {
         $timeout(function () {
-          $parse(invalidModel).assign(scope, isSingleModel ? invalidFile : invalidFiles);
+          if (invalidModel.includes('(')){
+            $parse(invalidModel)(scope, {$invalidFile: invalidFile, $invalidFiles: invalidFiles});
+          } else {
+            $parse(invalidModel).assign(scope, isSingleModel ? invalidFile : invalidFiles);                
+          } 
         });
       }
       $timeout(function () {
