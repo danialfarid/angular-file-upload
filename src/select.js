@@ -227,17 +227,20 @@ ngFileUpload.directive('ngfSelect', ['$parse', '$timeout', '$compile', 'Upload',
       angular.forEach(unwatches, function (unwatch) {
         unwatch();
       });
+      cleanUpGeneratedElems();
     });
 
-    $timeout(function () {
-      for (var i = 0; i < generatedElems.length; i++) {
-        var g = generatedElems[i];
-        if (!document.body.contains(g.el[0])) {
-          generatedElems.splice(i, 1);
-          g.ref.remove();
+    function cleanUpGeneratedElems() {
+      $timeout(function () {
+        for (var i = 0; i < generatedElems.length; i++) {
+          var g = generatedElems[i];
+          if (!document.body.contains(g.el[0])) {
+            generatedElems.splice(i, 1);
+            g.ref.remove();
+          }
         }
-      }
-    });
+      });
+    }
 
     if (window.FileAPI && window.FileAPI.ngfFixIE) {
       window.FileAPI.ngfFixIE(elem, fileElem, changeFn);
