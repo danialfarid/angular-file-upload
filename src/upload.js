@@ -153,14 +153,14 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
     promise.success = function (fn) {
       promise.then(function (response) {
         fn(response.data, response.status, response.headers, config);
-      });
+      }, function(e) { return e; });
       return promise;
     };
 
     promise.error = function (fn) {
       promise.then(null, function (response) {
         fn(response.data, response.status, response.headers, config);
-      });
+      }, function(e) { return e; });
       return promise;
     };
 
@@ -168,7 +168,7 @@ ngFileUpload.service('UploadBase', ['$http', '$q', '$timeout', function ($http, 
       promise.progressFunc = fn;
       promise.then(null, null, function (n) {
         fn(n);
-      });
+      }, function(e) { return e; });
       return promise;
     };
     promise.abort = promise.pause = function () {
