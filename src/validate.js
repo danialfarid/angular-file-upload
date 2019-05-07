@@ -6,7 +6,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
     if (str.length > 2 && str[0] === '/' && str[str.length - 1] === '/') {
       regexp = str.substring(1, str.length - 1);
     } else {
-      var split = str.split(',');
+      var split = str.replace(/\s+/g, '').split(',');
       if (split.length > 1) {
         for (var i = 0; i < split.length; i++) {
           var r = globStringToRegex(split[i]);
