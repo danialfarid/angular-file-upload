@@ -451,7 +451,7 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
       }
       upload.dataUrl(file).then(function (dataUrl) {
         var el = angular.element(file.type.indexOf('audio') === 0 ? '<audio>' : '<video>')
-          .attr('src', dataUrl).css('visibility', 'none').css('position', 'fixed');
+          .attr('src', dataUrl).css('visibility', 'hidden').css('position', 'fixed');
 
         function success() {
           var duration = el[0].duration;
