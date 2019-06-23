@@ -11,10 +11,8 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
         for (var i = 0; i < split.length; i++) {
           var r = globStringToRegex(split[i]);
           if (r.regexp) {
+            regexp += regexp ? '|' : '';
             regexp += '(' + r.regexp + ')';
-            if (i < split.length - 1) {
-              regexp += '|';
-            }
           } else {
             excludes = excludes.concat(r.excludes);
           }
