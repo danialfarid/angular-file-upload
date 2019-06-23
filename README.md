@@ -1,7 +1,5 @@
 [![npm version](https://badge.fury.io/js/ng-file-upload.svg)](http://badge.fury.io/js/ng-file-upload)
 [![Downloads](http://img.shields.io/npm/dm/ng-file-upload.svg)](https://npmjs.org/package/ng-file-upload)
-[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/pr)](http://issuestats.com/github/danialfarid/ng-file-upload)
-[![Issue Stats](http://issuestats.com/github/danialfarid/ng-file-upload/badge/issue)](http://issuestats.com/github/danialfarid/ng-file-upload)<br/>
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=danial%2efarid%40gmail%2ecom&lc=CA&item_name=ng%2dfile%2dupload&item_number=ng%2dfile%2dupload&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 [![Gratipay donate button](https://img.shields.io/gratipay/danialfarid.svg?label=donate)](https://gratipay.com/ng-file-upload/)
 
@@ -35,7 +33,7 @@ Table of Content:
 * file upload progress, cancel/abort
 * file drag and drop (html5 only)
 * image paste from clipboard and drag and drop from browser pages (html5 only).
-* image resize and center crop (native) and user controlled crop through [ngImgCrop](https://github.com/alexk111/ngImgCrop). See [crop sample](http://jsfiddle.net/danialfarid/xxo3sk41/590/) (html5 only)
+* image resize and center crop (native) and user controlled crop through [ngImgCropFullExtended](https://github.com/CrackerakiUA/ngImgCropFullExtended). See [crop sample](http://crackerakiua.github.io/ngImgCropFullExtended/) (html5 only)
 * orientation fix for jpeg image files with exif orientation data
 * resumable uploads: pause/resume upload (html5 only)
 * native validation support for file type/size, image width/height/aspect ratio, video/audio duration, and `ng-required` with pluggable custom sync or async validations.
