@@ -610,7 +610,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         $timeout(function () {
           update(keep ? prevValidFiles.concat(valids) : valids,
             keep ? prevInvalidFiles.concat(invalids) : invalids,
-            files, dupFiles, isSingleModel);
+            allNewFiles, dupFiles, isSingleModel);
         }, options && options.debounce ? options.debounce.change || options.debounce : 0);
       }
 
@@ -619,8 +619,12 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
         if (validateAfterResize) {
           upload.validate(allNewFiles, keep ? prevValidFiles.length : 0, ngModel, attr, scope)
             .then(function (validationResult) {
-              valids = validationResult.validsFiles;
-              invalids = validationResult.invalidsFiles;
+              if (!options || !options.allowInvalid) {
+                  valids = validationResult.validFiles;
+                  invalids = validationResult.invalidFiles;
+              } else {
+                  valids = allNewFiles;
+              }
               updateModel();
             });
         } else {
@@ -671,7 +675,7 @@ ngFileUpload.service('Upload', ['$parse', '$timeout', '$compile', '$q', 'UploadE
     upload.validate(allNewFiles, keep ? prevValidFiles.length : 0, ngModel, attr, scope)
       .then(function (validationResult) {
       if (noDelay) {
-        update(allNewFiles, [], files, dupFiles, isSingleModel);
+        update(files, [], allNewFiles, dupFiles, isSingleModel);
       } else {
         if ((!options || !options.allowInvalid) && !validateAfterResize) {
           valids = validationResult.validFiles;
@@ -1674,14 +1678,15 @@ ngFileUpload.service('UploadValidate', ['UploadDataUrl', '$q', '$timeout', funct
 
         el.on('loadedmetadata', success);
         el.on('error', error);
+        
         var count = 0;
-
         function checkLoadError() {
+          count++;
           $timeout(function () {
             if (el[0].parentNode) {
               if (el[0].duration) {
                 success();
-              } else if (count > 10) {
+              } else if (count++ > 10) {
                 error();
               } else {
                 checkLoadError();
